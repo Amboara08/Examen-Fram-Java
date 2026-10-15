@@ -1,0 +1,99 @@
+ACCÈS ET LANCEMENT DES PROJETS TPE - VERSION 2
+
+Les identifiants sont sensibles à la casse. Ces comptes sont destinés à la démonstration locale.
+
+1. TOURNOIS SPORTIFS
+Dossier : 01-tournois
+Adresse : http://localhost:8181/
+Connexion : http://localhost:8181/login
+admin    / Admin123!    : administration complète et paramètres
+manager  / Manager123!  : gestion métier
+operator / Operator123! : création et actions métier
+user     / User123!     : consultation
+Classe Eclipse : com.example.tournois.Application
+Configuration Eclipse : 01-tournois-v2.launch
+Base H2 : data/tournois.mv.db
+URL JDBC : jdbc:h2:file:./data/tournois;DB_CLOSE_ON_EXIT=FALSE
+
+2. PRODUCTION TEXTILE
+Dossier : 02-textile
+Adresse : http://localhost:8182/
+Connexion : http://localhost:8182/login
+admin    / Admin123!    : administration complète et paramètres
+manager  / Manager123!  : gestion métier
+operator / Operator123! : création et actions métier
+user     / User123!     : consultation
+Classe Eclipse : com.example.textile.Application
+Configuration Eclipse : 02-textile-v2.launch
+Base H2 : data/textile.mv.db
+URL JDBC : jdbc:h2:file:./data/textile;DB_CLOSE_ON_EXIT=FALSE
+
+3. FLOTTE DE TAXIS
+Dossier : 03-taxis
+Adresse : http://localhost:8183/
+Connexion : http://localhost:8183/login
+admin    / Admin123!    : administration complète et paramètres
+manager  / Manager123!  : gestion métier
+operator / Operator123! : création et actions métier
+user     / User123!     : consultation
+Classe Eclipse : com.example.taxis.Application
+Configuration Eclipse : 03-taxis-v2.launch
+Base H2 : data/taxis.mv.db
+URL JDBC : jdbc:h2:file:./data/taxis;DB_CLOSE_ON_EXIT=FALSE
+
+4. PARKING
+Dossier : 04-parking
+Adresse : http://localhost:8184/
+Connexion : http://localhost:8184/login
+admin    / Admin123!    : administration complète et paramètres
+manager  / Manager123!  : gestion métier
+operator / Operator123! : création et actions métier
+user     / User123!     : consultation
+Classe Eclipse : com.example.parking.Application
+Configuration Eclipse : 04-parking-v2.launch
+Base H2 : data/parking.mv.db
+URL JDBC : jdbc:h2:file:./data/parking;DB_CLOSE_ON_EXIT=FALSE
+
+5. SERVICE DE LIVRAISON
+Dossier : 05-livraison
+Adresse : http://localhost:8185/
+Connexion : http://localhost:8185/login
+admin    / Admin123!    : administration complète et paramètres
+manager  / Manager123!  : gestion métier
+operator / Operator123! : création et actions métier
+user     / User123!     : consultation
+Classe Eclipse : com.example.livraison.Application
+Configuration Eclipse : 05-livraison-v2.launch
+Base H2 : data/livraison.mv.db
+URL JDBC : jdbc:h2:file:./data/livraison;DB_CLOSE_ON_EXIT=FALSE
+
+INFORMATIONS COMMUNES
+
+Lancement : double-cliquer sur lancer.cmd dans le dossier du projet.
+Compilation et tests d'un projet : compiler.cmd dans son dossier.
+Compilation et tests des cinq projets : compiler-tout.cmd à la racine.
+Arrêt : Ctrl+C dans la console de lancement ; ne pas lancer deux instances du même projet V2.
+Pour un lancement dans une console avec lancer.cmd : Ctrl+C dans cette console.
+Chaque adresse devient disponible après le démarrage de son projet.
+
+Java : JDK 17 ou supérieur.
+Maven : 3.6.3 ou supérieur, nécessaire pour compiler.
+Eclipse : File > Import > Maven > Existing Maven Projects, puis sélectionner le dossier version-2.
+Lancer la configuration .launch du projet ou sa classe Application en Java Application.
+Dossier de travail : racine du projet concerné.
+Arrêter toute instance utilisant le même port avant de démarrer depuis Eclipse.
+
+Base de données de chaque projet : H2 locale, utilisateur sa, mot de passe vide.
+Les chemins data ci-dessus sont relatifs au dossier du projet.
+La console H2 web n'est pas activée. Aucun compte MySQL n'est nécessaire.
+Les comptes de connexion sont définis dans src/main/java/com/example/<projet>/security/SecurityConfig.java.
+Les comptes sont en mémoire et recréés au démarrage ; les données métier sont persistantes dans H2.
+Les mots de passe sont encodés avec BCrypt par l'application.
+
+API REST : préfixe /api, authentification HTTP Basic avec les mêmes comptes.
+Paramètres métier : page /settings, accessible au compte admin.
+Configuration technique : src/main/resources/application.properties de chaque projet.
+Listes initialement vides : aucune donnée de démonstration automatique.
+Guide détaillé : README.md de version-2. Règles métier et routes : ../EXIGENCES.md.
+
+

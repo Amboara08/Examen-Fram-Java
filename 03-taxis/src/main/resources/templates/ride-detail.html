@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>
+        Courses 
+        <span th:text="&#x27;#&#x27; + ${record.id}">
+        </span>
+      </h1>
+      <a sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" th:href="@{/rides/{id}/edit(id=${record.id})}">Modifier</a>
+      <a th:href="@{/rides}">Retour</a>
+      <table>
+        <tr>
+          <th>Client</th>
+          <td th:text="${record.clientId != null ? record.clientId : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Départ</th>
+          <td th:text="${record.departure != null ? record.departure : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Destination</th>
+          <td th:text="${record.destination != null ? record.destination : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Distance (km)</th>
+          <td th:text="${record.distance != null ? record.distance : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Date et heure</th>
+          <td th:text="${record.scheduledAt != null ? record.scheduledAt : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Passagers</th>
+          <td th:text="${record.passengers != null ? record.passengers : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Tarif</th>
+          <td th:text="${record.fare != null ? record.fare : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Chauffeur</th>
+          <td th:text="${record.driverId != null ? record.driverId : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Véhicule</th>
+          <td th:text="${record.vehicleId != null ? record.vehicleId : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Statut</th>
+          <td th:text="${record.status != null ? record.status : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Début réel</th>
+          <td th:text="${record.startedAt != null ? record.startedAt : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Fin réelle</th>
+          <td th:text="${record.completedAt != null ? record.completedAt : &#x27;—&#x27;}">
+          </td>
+        </tr>
+      </table>
+      <div sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;,&#x27;OPERATOR&#x27;)">
+        <form th:if="${record.status == &#x27;EN_ATTENTE&#x27;}" method="post" th:action="@{/rides/{id}/actions/assign(id=${record.id})}">
+          <h3>Attribuer</h3>
+          <button>Attribuer</button>
+        </form>
+        <form th:if="${record.status == &#x27;ASSIGNEE&#x27;}" method="post" th:action="@{/rides/{id}/actions/start(id=${record.id})}">
+          <h3>Démarrer</h3>
+          <button>Démarrer</button>
+        </form>
+        <form th:if="${record.status == &#x27;EN_COURS&#x27;}" method="post" th:action="@{/rides/{id}/actions/complete(id=${record.id})}">
+          <h3>Terminer</h3>
+          <button>Terminer</button>
+        </form>
+        <form th:if="${record.status != &#x27;TERMINEE&#x27; and record.status != &#x27;ANNULEE&#x27;}" method="post" th:action="@{/rides/{id}/actions/cancel(id=${record.id})}">
+          <h3>Annuler</h3>
+          <button>Annuler</button>
+        </form>
+      </div>
+      <h2>Historique</h2>
+      <ul>
+        <li th:each="e : ${audit}">
+          <strong th:text="${e.action}">
+          </strong>
+          <span th:text="${e.actor + &#x27; · &#x27; + #temporals.format(e.occurredAt,&#x27;dd/MM/yyyy HH:mm&#x27;)}">
+          </span>
+        </li>
+      </ul>
+      <form sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" method="post" th:action="@{/rides/{id}/delete(id=${record.id})}" onsubmit="return confirm(&#x27;Supprimer cet enregistrement ?&#x27;)">
+        <button>Supprimer</button>
+      </form>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>Accueil</h1>
+      <section class="welcome-panel"><i class="fa-solid fa-truck-fast"></i><div><h2>Centre des livraisons</h2><p>Gérez les clients, livreurs, commandes, colis et incidents depuis le menu principal.</p></div></section>
+    </main>
+  </body>
+</html>

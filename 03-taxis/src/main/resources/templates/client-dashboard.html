@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="portal-page">
+<header th:replace="~{layout :: header}"></header>
+<main class="portal-main">
+  <div th:replace="~{layout :: notices}"></div>
+  <section class="portal-hero">
+    <div><span class="eyebrow"><i class="fa-solid fa-user"></i> Espace client</span><h1 th:text="'Bonjour, ' + ${client.name}">Bonjour</h1><p>Commandez votre taxi et suivez vos demandes simplement.</p></div>
+    <i class="fa-solid fa-taxi hero-icon"></i>
+  </section>
+
+  <section class="portal-card">
+    <div class="section-title"><div><h2><i class="fa-solid fa-location-dot"></i> Commander un taxi</h2><p>Indiquez votre trajet et l'heure souhaitée.</p></div></div>
+    <form class="form-grid" method="post" th:action="@{/client/rides}">
+      <label>Adresse de départ<input name="departure" required maxlength="2000" placeholder="Votre adresse de départ"></label>
+      <label>Destination<input name="destination" required maxlength="2000" placeholder="Votre destination"></label>
+      <label>Distance estimée (km)<input name="distance" type="number" min="0.1" step="0.1" required></label>
+      <label>Date et heure<input name="scheduledAt" type="datetime-local" required></label>
+      <label>Nombre de passagers<input name="passengers" type="number" min="1" max="8" value="1" required></label>
+      <div class="form-action"><button class="button-primary" type="submit"><i class="fa-solid fa-paper-plane"></i> Envoyer la demande</button></div>
+    </form>
+  </section>
+
+  <section class="portal-card">
+    <div class="section-title"><h2><i class="fa-solid fa-clock-rotate-left"></i> Mes demandes</h2></div>
+    <div class="table-wrap"><table><thead><tr><th>Trajet</th><th>Date</th><th>Passagers</th><th>Prix</th><th>Statut</th><th>Chauffeur</th><th>Action</th></tr></thead>
+      <tbody><tr th:each="ride : ${rides}">
+        <td><strong th:text="${ride.departure}"></strong><br><span class="muted"><i class="fa-solid fa-arrow-right"></i> <span th:text="${ride.destination}"></span></span></td>
+        <td th:text="${#temporals.format(ride.scheduledAt,'dd/MM/yyyy HH:mm')}"></td><td th:text="${ride.passengers}"></td><td th:text="${ride.fare + ' €'}"></td>
+        <td><span class="status-badge" th:classappend="${' status-' + #strings.toLowerCase(ride.status)}" th:text="${#strings.replace(ride.status,'_',' ')}"></span></td>
+        <td><th:block th:each="d : ${drivers}" th:if="${ride.driverId != null and d.id == ride.driverId}"><strong th:text="${d.name}"></strong><br><a th:href="${'tel:' + d.phone}"><i class="fa-solid fa-phone"></i> Appeler</a></th:block><span th:if="${ride.driverId == null}">En attente</span></td>
+        <td><form class="inline-form" th:if="${ride.status == 'EN_ATTENTE'}" method="post" th:action="@{/client/rides/{id}/cancel(id=${ride.id})}"><button class="danger-button" type="submit"><i class="fa-solid fa-xmark"></i> Annuler</button></form></td>
+      </tr><tr th:if="${#lists.isEmpty(rides)}"><td colspan="7" class="empty-state"><i class="fa-solid fa-road"></i> Aucune demande pour le moment</td></tr></tbody>
+    </table></div>
+  </section>
+</main>
+</body></html>

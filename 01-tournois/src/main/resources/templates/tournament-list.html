@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>Tournois</h1>
+      <a sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;,&#x27;OPERATOR&#x27;)" th:href="@{/tournaments/new}">Ajouter</a>
+      <form method="get">
+        <label>
+          Recherche
+          <input name="q" placeholder="Rechercher" th:value="${q}">
+        </label>
+        <label>
+          Statut
+          <select name="status">
+            <option value="">Tous</option>
+            <option value="BROUILLON" th:selected="${status == &#x27;BROUILLON&#x27;}">Brouillon</option>
+            <option value="INSCRIPTION" th:selected="${status == &#x27;INSCRIPTION&#x27;}">Inscription</option>
+            <option value="PROGRAMME" th:selected="${status == &#x27;PROGRAMME&#x27;}">Programme</option>
+            <option value="EN_COURS" th:selected="${status == &#x27;EN_COURS&#x27;}">En cours</option>
+            <option value="TERMINE" th:selected="${status == &#x27;TERMINE&#x27;}">Termine</option>
+            <option value="ANNULE" th:selected="${status == &#x27;ANNULE&#x27;}">Annule</option>
+          </select>
+        </label>
+        <label>
+          Format
+          <select name="filter">
+            <option value="">Tous</option>
+            <option value="format:CHAMPIONNAT" th:selected="${filter == &#x27;format:CHAMPIONNAT&#x27;}">Championnat</option>
+            <option value="format:ALLER_RETOUR" th:selected="${filter == &#x27;format:ALLER_RETOUR&#x27;}">Aller retour</option>
+            <option value="format:ELIMINATION" th:selected="${filter == &#x27;format:ELIMINATION&#x27;}">Elimination</option>
+          </select>
+        </label>
+        <label>
+          Tri
+          <select name="sort">
+            <option value="id,desc">Plus récents</option>
+            <option value="id,asc">Plus anciens</option>
+            <option value="name,asc">Nom</option>
+          </select>
+        </label>
+        <button>Filtrer</button>
+        <a th:href="@{/tournaments}">Effacer</a>
+      </form>
+      <table>
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Nom</th>
+            <th>Sport</th>
+            <th>Description</th>
+            <th>Début</th>
+            <th>Fin</th>
+            <th>Lieu</th>
+            <th>Statut</th>
+            <th>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="row : ${page.content}">
+            <td th:text="${row.id}">
+            </td>
+            <td>
+              <span th:text="${row.name}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.sport}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.description}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.startDate}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.endDate}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.location}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.status}">
+              </span>
+            </td>
+            <td>
+              <a th:href="@{/tournaments/{id}(id=${row.id})}">Ouvrir</a>
+            </td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(page.content)}">
+            <td colspan="20">Aucun enregistrement</td>
+          </tr>
+        </tbody>
+      </table>
+      <span th:text="${page.totalElements} + &#x27; enregistrement(s)&#x27;">
+      </span>
+      <a th:if="${page.number &gt; 0}" th:href="@{/tournaments(page=${page.number - 1},q=${q},status=${status},filter=${filter},sort=${param.sort})}">Précédent</a>
+      <span th:text="${page.number + 1} + &#x27; / &#x27; + ${T(java.lang.Math).max(1,page.totalPages)}">
+      </span>
+      <a th:if="${page.number + 1 &lt; page.totalPages}" th:href="@{/tournaments(page=${page.number + 1},q=${q},status=${status},filter=${filter},sort=${param.sort})}">Suivant</a>
+    </main>
+  </body>
+</html>

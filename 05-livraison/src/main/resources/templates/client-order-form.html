@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title th:text="${title}"></title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<body class="client-portal"><header class="client-header"><a class="client-brand" th:href="@{/client}"><i class="fa-solid fa-truck-fast"></i> Livraison</a><div><span th:text="${client.name}"></span></div></header>
+<main class="client-main"><div th:replace="~{layout :: notices}"></div><section class="client-card form-card"><h1><i class="fa-solid fa-box-open"></i> Commander une livraison</h1>
+<form method="post" th:action="@{/client/orders}"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+<label>Adresse d'enlèvement<input name="pickupAddress" required th:value="${client.address}"></label>
+<label>Adresse de livraison<input name="deliveryAddress" required></label>
+<div class="form-grid"><label>Nom du destinataire<input name="recipientName" required></label><label>Téléphone du destinataire<input name="recipientPhone" required></label></div>
+<label>Description du colis<textarea name="description" rows="3" required maxlength="2000"></textarea></label>
+<div class="form-grid"><label>Poids (kg)<input name="weight" type="number" min="0.01" step="0.01" required></label><label>Priorité<select name="priority"><option value="NORMALE">Normale · 48 h</option><option value="URGENTE">Urgente · 24 h</option><option value="TRES_URGENTE">Très urgente · 6 h</option></select></label></div>
+<p class="form-help"><i class="fa-solid fa-circle-info"></i> Le numéro de suivi, la date prévue et le prix seront calculés automatiquement.</p>
+<button class="button-success"><i class="fa-solid fa-paper-plane"></i> Confirmer la commande</button><a class="button button-secondary" th:href="@{/client}"><i class="fa-solid fa-xmark"></i> Annuler</a>
+</form></section></main></body></html>

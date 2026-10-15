@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>
+        Entrées et sorties 
+        <span th:text="&#x27;#&#x27; + ${record.id}">
+        </span>
+      </h1>
+      <a class="button button-primary" sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" th:href="@{/parking/stays/{id}/edit(id=${record.id})}"><i class="fa-solid fa-pen"></i> Modifier</a>
+      <a class="button button-secondary" th:href="@{/parking/stays}"><i class="fa-solid fa-arrow-left"></i> Retour</a>
+      <table>
+        <tr>
+          <th>Usager</th>
+          <td th:text="${customer.name}">
+          </td>
+        </tr>
+        <tr>
+          <th>Véhicule</th>
+          <td th:text="${vehicle.plate + ' · ' + vehicle.brand + ' ' + vehicle.model}">
+          </td>
+        </tr>
+        <tr>
+          <th>Place (automatique si vide)</th>
+          <td th:text="${record.spaceId != null ? record.spaceId : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Réservation</th>
+          <td th:text="${record.reservationId != null ? record.reservationId : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Entrée</th>
+          <td th:text="${record.enteredAt != null ? record.enteredAt : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Sortie prévue</th>
+          <td th:text="${record.expectedExit != null ? record.expectedExit : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Sortie réelle</th>
+          <td th:text="${record.exitedAt != null ? record.exitedAt : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Montant</th>
+          <td th:text="${record.amount != null ? record.amount : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Statut</th>
+          <td th:text="${record.status != null ? record.status : &#x27;—&#x27;}">
+          </td>
+        </tr>
+      </table>
+      <h2>Facturation</h2>
+      <strong th:text="${estimate}">
+      </strong>
+      <p th:text="${vehicle.plate + &#x27; · &#x27; + customer.name}">
+      </p>
+      <div sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;,&#x27;OPERATOR&#x27;)">
+        <form th:if="${record.status == &#x27;EN_COURS&#x27;}" method="post" th:action="@{/parking/stays/{id}/actions/exit(id=${record.id})}">
+          <h3>Enregistrer la sortie</h3>
+          <label>
+            Date et heure
+            <input name="at" type="datetime-local">
+          </label>
+          <button class="button-danger"><i class="fa-solid fa-right-from-bracket"></i> Enregistrer la sortie</button>
+        </form>
+      </div>
+      <h2>Historique</h2>
+      <ul>
+        <li th:each="e : ${audit}">
+          <strong th:text="${e.action}">
+          </strong>
+          <span th:text="${e.actor + &#x27; · &#x27; + #temporals.format(e.occurredAt,&#x27;dd/MM/yyyy HH:mm&#x27;)}">
+          </span>
+        </li>
+      </ul>
+      <form sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" method="post" th:action="@{/parking/stays/{id}/delete(id=${record.id})}" onsubmit="return confirm(&#x27;Supprimer cet enregistrement ?&#x27;)">
+        <button class="button-danger"><i class="fa-solid fa-trash"></i> Supprimer</button>
+      </form>
+    </main>
+  </body>
+</html>

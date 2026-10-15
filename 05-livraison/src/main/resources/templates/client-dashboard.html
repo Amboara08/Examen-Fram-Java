@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title th:text="${title}">Espace client</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<body class="client-portal">
+<header class="client-header"><a class="client-brand" th:href="@{/client}"><i class="fa-solid fa-truck-fast"></i> Livraison</a>
+  <div><i class="fa-solid fa-circle-user"></i><span th:text="${client.name}"></span><form method="post" th:action="@{/logout}"><button class="button-secondary"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</button></form></div></header>
+<main class="client-main">
+  <div th:replace="~{layout :: notices}"></div>
+  <section class="client-hero"><div><span>ESPACE CLIENT</span><h1 th:text="'Bonjour, '+${client.name}"></h1><p>Commandez et suivez vos livraisons depuis un espace simple.</p></div>
+    <a class="button button-primary" th:href="@{/client/orders/new}"><i class="fa-solid fa-plus"></i> Commander une livraison</a></section>
+  <section class="client-card"><h2><i class="fa-solid fa-user"></i> Mon profil</h2><div class="profile-grid"><div><small>E-mail</small><strong th:text="${client.email}"></strong></div><div><small>Téléphone</small><strong th:text="${client.phone}"></strong></div><div><small>Adresse</small><strong th:text="${client.address}"></strong></div></div></section>
+  <section class="client-card"><h2><i class="fa-solid fa-box"></i> Mes livraisons</h2><div class="responsive-table"><table><thead><tr><th>Suivi</th><th>Destination</th><th>Priorité</th><th>Prix</th><th>Prévue</th><th>Statut</th><th>Action</th></tr></thead><tbody>
+    <tr th:each="order:${orders}"><td><strong th:text="${order.number}"></strong></td><td th:text="${order.deliveryAddress}"></td><td th:text="${order.priority}"></td><td th:text="${order.price+' FCFA'}"></td><td th:text="${#temporals.format(order.expectedAt,'dd/MM/yyyy HH:mm')}"></td><td><span class="status-badge" th:classappend="${' status-'+order.status.toLowerCase()}" th:text="${order.status}"></span></td><td><form th:if="${order.status=='CREEE'}" method="post" th:action="@{/client/orders/{id}/cancel(id=${order.id})}" onsubmit="return confirm('Annuler cette commande ?')"><button class="button-danger"><i class="fa-solid fa-ban"></i> Annuler</button></form></td></tr>
+    <tr th:if="${#lists.isEmpty(orders)}"><td colspan="7" class="empty-state">Aucune livraison pour le moment</td></tr>
+  </tbody></table></div></section>
+</main></body></html>

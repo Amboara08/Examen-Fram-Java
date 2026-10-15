@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${title}">Parking</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header th:fragment="header">
+  <strong><i class="fa-solid fa-square-parking"></i> Centre de contrôle</strong>
+  <div><i class="fa-solid fa-circle-user"></i><span sec:authentication="name"></span>
+    <form method="post" th:action="@{/logout}"><button><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</button></form>
+  </div>
+</header>
+<nav th:fragment="nav">
+  <a th:href="@{/}"><i class="fa-solid fa-gauge-high"></i> Tableau de bord</a>
+  <a th:href="@{/users}"><i class="fa-solid fa-users"></i> Usagers</a>
+  <a th:href="@{/parking/spaces}"><i class="fa-solid fa-square-parking"></i> Places</a>
+  <a th:href="@{/reservations}"><i class="fa-solid fa-calendar-check"></i> Réservations</a>
+  <a th:href="@{/parking/stays}"><i class="fa-solid fa-arrow-right-arrow-left"></i> Entrées et sorties</a>
+</nav>
+
+<div th:fragment="notices">
+  <p class="message" th:if="${success}" th:text="${success}"></p>
+  <p class="message error" role="alert" th:if="${error}" th:text="${error}"></p>
+</div>
+<table class="metrics-grid" th:fragment="metrics">
+  <tbody><tr th:each="metric : ${stats.metrics}">
+    <th th:text="${metric.key}"></th><td th:text="${metric.value}"></td>
+  </tr></tbody>
+</table>
+</body></html>

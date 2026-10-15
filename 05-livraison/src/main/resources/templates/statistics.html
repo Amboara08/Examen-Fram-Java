@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>Statistiques</h1>
+      <form method="get">
+        <label>
+          Du
+          <input type="date" name="from" th:value="${from}">
+        </label>
+        <label>
+          Au
+          <input type="date" name="to" th:value="${to}">
+        </label>
+        <label>
+          Période
+          <select name="period">
+            <option value="">Personnalisée</option>
+            <option value="day">Aujourd’hui</option>
+            <option value="week">Cette semaine</option>
+            <option value="month">Ce mois</option>
+          </select>
+        </label>
+        <label>
+          Livreur (n°)
+          <input name="actorId" type="number" min="1" th:value="${actorId}">
+        </label>
+        <label>
+          Zone
+          <input name="zone" th:value="${zone}">
+        </label>
+        <button>Afficher</button>
+      </form>
+      <div th:replace="~{layout :: metrics}">
+      </div>
+      <div th:each="group : ${stats.groups}">
+        <h2 th:text="${group.key}">
+        </h2>
+        <table>
+          <tr th:each="value : ${group.value}">
+            <th th:text="${value.key}">
+            </th>
+            <td th:text="${value.value}">
+            </td>
+          </tr>
+        </table>
+      </div>
+    </main>
+  </body>
+</html>

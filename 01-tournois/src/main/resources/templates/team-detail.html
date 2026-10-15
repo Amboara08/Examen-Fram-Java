@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>
+        Équipes 
+        <span th:text="&#x27;#&#x27; + ${record.id}">
+        </span>
+      </h1>
+      <div class="page-actions">
+        <a class="button" sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" th:href="@{/teams/{id}/edit(id=${record.id})}"><i class="fa-solid fa-pen"></i> Modifier</a>
+        <a class="button button-secondary" th:href="@{/teams}"><i class="fa-solid fa-arrow-left"></i> Retour</a>
+      </div>
+      <table>
+        <tr>
+          <th>Nom</th>
+          <td th:text="${record.name != null ? record.name : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Logo (URL)</th>
+          <td th:text="${record.logo != null ? record.logo : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Ville</th>
+          <td th:text="${record.city != null ? record.city : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Entraîneur</th>
+          <td th:text="${record.coach != null ? record.coach : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Statut</th>
+          <td th:text="${record.status != null ? record.status : &#x27;—&#x27;}">
+          </td>
+        </tr>
+      </table>
+      <section class="players-section">
+        <div class="section-title">
+          <div><h2><i class="fa-solid fa-users"></i> Joueurs</h2><p>Ajoute les joueurs uniquement après la création de l'équipe.</p></div>
+          <span class="count-badge" th:text="${#lists.size(players)} + ' joueur(s)'">0 joueur</span>
+        </div>
+        <form class="player-form" sec:authorize="hasAnyRole('ADMIN','MANAGER','OPERATOR')" method="post" th:action="@{/teams/{id}/players(id=${record.id})}">
+          <label>Numéro<input name="number" type="number" min="1" max="99" required placeholder="10"></label>
+          <label>Nom<input name="name" type="text" maxlength="120" required placeholder="Nom du joueur"></label>
+          <label>Taille (cm)<input name="heightCm" type="number" min="100" max="250" required placeholder="180"></label>
+          <label>Poste<select name="position" required>
+            <option value="">Sélectionner</option><option value="GARDIEN">Gardien</option>
+            <option value="DEFENSEUR">Défenseur</option><option value="MILIEU">Milieu</option><option value="ATTAQUANT">Attaquant</option>
+          </select></label>
+          <button><i class="fa-solid fa-user-plus"></i> Ajouter</button>
+        </form>
+        <div class="table-wrap"><table class="players-table">
+          <thead><tr><th>Numéro</th><th>Nom</th><th>Taille</th><th>Poste</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr th:each="player : ${players}">
+              <td><span class="jersey-number" th:text="${player.number}">10</span></td>
+              <td th:text="${player.name}">Nom</td><td th:text="${player.heightCm + ' cm'}">180 cm</td>
+              <td><span class="position-badge" th:text="${player.position}">ATTAQUANT</span></td>
+              <td><form class="inline-form" sec:authorize="hasAnyRole('ADMIN','MANAGER')" method="post" th:action="@{/teams/{teamId}/players/{playerId}/delete(teamId=${record.id},playerId=${player.id})}" onsubmit="return confirm('Supprimer ce joueur ?')"><button class="icon-button danger" title="Supprimer"><i class="fa-solid fa-trash"></i></button></form></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(players)}"><td colspan="5" class="empty-state"><i class="fa-solid fa-user-slash"></i> Aucun joueur dans cette équipe</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+      <h2>Historique</h2>
+      <ul>
+        <li th:each="e : ${audit}">
+          <strong th:text="${e.action}">
+          </strong>
+          <span th:text="${e.actor + &#x27; · &#x27; + #temporals.format(e.occurredAt,&#x27;dd/MM/yyyy HH:mm&#x27;)}">
+          </span>
+        </li>
+      </ul>
+      <form sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" method="post" th:action="@{/teams/{id}/delete(id=${record.id})}" onsubmit="return confirm(&#x27;Supprimer cet enregistrement ?&#x27;)">
+        <button class="danger-button"><i class="fa-solid fa-trash"></i> Supprimer l'équipe</button>
+      </form>
+    </main>
+  </body>
+</html>

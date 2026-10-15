@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>
+        Commandes 
+        <span th:text="&#x27;#&#x27; + ${record.id}">
+        </span>
+      </h1>
+      <a th:href="@{/orders}">Retour</a>
+      <table>
+        <tr>
+          <th>Numéro</th>
+          <td th:text="${record.number != null ? record.number : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Client</th>
+          <td th:text="${record.clientId != null ? record.clientId : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Enlèvement</th>
+          <td th:text="${record.pickupAddress != null ? record.pickupAddress : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Livraison</th>
+          <td th:text="${record.deliveryAddress != null ? record.deliveryAddress : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Poids (kg)</th>
+          <td th:text="${record.weight != null ? record.weight : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Volume</th>
+          <td th:text="${record.volume != null ? record.volume : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Priorité</th>
+          <td th:text="${record.priority != null ? record.priority : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Distance (km)</th>
+          <td th:text="${record.distance != null ? record.distance : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Zone</th>
+          <td th:text="${record.zone != null ? record.zone : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Date prévue</th>
+          <td th:text="${record.expectedAt != null ? record.expectedAt : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Prix</th>
+          <td th:text="${record.price != null ? record.price : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Livreur</th>
+          <td th:text="${record.delivererId != null ? record.delivererId : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Statut</th>
+          <td th:text="${record.status != null ? record.status : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Création</th>
+          <td th:text="${record.createdAt != null ? record.createdAt : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Livraison réelle</th>
+          <td th:text="${record.deliveredAt != null ? record.deliveredAt : &#x27;—&#x27;}">
+          </td>
+        </tr>
+      </table>
+      <h2>Colis</h2>
+      <a th:href="@{/parcels/new}">Ajouter un colis</a>
+      <table>
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Commande</th>
+            <th>Référence</th>
+            <th>Description</th>
+            <th>Poids (kg)</th>
+            <th>Volume</th>
+            <th>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="row : ${parcels}">
+            <td th:text="${row.id}">
+            </td>
+            <td>
+              <span th:text="${row.orderId}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.reference}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.description}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.weight}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.volume}">
+              </span>
+            </td>
+            <td>
+              <a th:href="@{/parcels/{id}(id=${row.id})}">Ouvrir</a>
+            </td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(parcels)}">
+            <td colspan="20">Aucun enregistrement</td>
+          </tr>
+        </tbody>
+      </table>
+      <h2>Incidents</h2>
+      <a th:href="@{/incidents/new}">Signaler un incident</a>
+      <table>
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Commande</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Résolution</th>
+            <th>Livreur</th>
+            <th>Date</th>
+            <th>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="row : ${incidents}">
+            <td th:text="${row.id}">
+            </td>
+            <td>
+              <span th:text="${row.orderId}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.type}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.description}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.resolution}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.delivererId}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.occurredAt}">
+              </span>
+            </td>
+            <td>
+              <a th:href="@{/incidents/{id}(id=${row.id})}">Ouvrir</a>
+            </td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(incidents)}">
+            <td colspan="20">Aucun enregistrement</td>
+          </tr>
+        </tbody>
+      </table>
+      <h2>Preuve de livraison</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Commande</th>
+            <th>Réceptionnaire</th>
+            <th>Code de confirmation</th>
+            <th>Commentaire</th>
+            <th>Date et heure</th>
+            <th>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="row : ${proofs}">
+            <td th:text="${row.id}">
+            </td>
+            <td>
+              <span th:text="${row.orderId}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.recipient}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.confirmationCode}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.comment}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.deliveredAt}">
+              </span>
+            </td>
+            <td>
+              <a th:href="@{/proofs/{id}(id=${row.id})}">Ouvrir</a>
+            </td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(proofs)}">
+            <td colspan="20">Aucun enregistrement</td>
+          </tr>
+        </tbody>
+      </table>
+      <div sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;,&#x27;OPERATOR&#x27;)">
+        <form th:if="${record.status == &#x27;CREEE&#x27;}" method="post" th:action="@{/orders/{id}/actions/assign(id=${record.id})}">
+          <h3>Affecter un livreur</h3>
+          <select name="delivererId" required><option value="">Choisir un livreur</option><option th:each="d:${delivererChoices}" th:value="${d.id}" th:text="${d.name+' · '+d.vehicle}"></option></select>
+          <button><i class="fa-solid fa-user-check"></i> Affecter</button>
+        </form>
+        <form th:if="${false}" method="post" th:action="@{/orders/{id}/actions/pickup(id=${record.id})}">
+          <h3>Prendre en charge</h3>
+          <button>Prendre en charge</button>
+        </form>
+        <form th:if="${false}" method="post" th:action="@{/orders/{id}/actions/start(id=${record.id})}">
+          <h3>Démarrer</h3>
+          <button>Démarrer</button>
+        </form>
+        <form th:if="${false}" method="post" th:action="@{/orders/{id}/actions/deliver(id=${record.id})}">
+          <h3>Confirmer la livraison</h3>
+          <label>
+            Réceptionnaire
+            <input name="recipient" type="text" required>
+          </label>
+          <label>
+            Code de confirmation
+            <input name="confirmationCode" type="text" required>
+          </label>
+          <label>
+            Date et heure
+            <input name="at" type="datetime-local" required>
+          </label>
+          <label>
+            Commentaire
+            <input name="comment" type="text">
+          </label>
+          <button>Confirmer la livraison</button>
+        </form>
+        <form th:if="${false}" method="post" th:action="@{/orders/{id}/actions/cancel(id=${record.id})}">
+          <h3>Annuler</h3>
+          <button>Annuler</button>
+        </form>
+        <form th:if="${false}" method="post" th:action="@{/orders/{id}/actions/return(id=${record.id})}">
+          <h3>Retourner</h3>
+          <button>Retourner</button>
+        </form>
+      </div>
+      <h2>Historique</h2>
+      <ul>
+        <li th:each="e : ${audit}">
+          <strong th:text="${e.action}">
+          </strong>
+          <span th:text="${e.actor + &#x27; · &#x27; + #temporals.format(e.occurredAt,&#x27;dd/MM/yyyy HH:mm&#x27;)}">
+          </span>
+        </li>
+      </ul>
+      <form th:if="${false}" sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" method="post" th:action="@{/orders/{id}/delete(id=${record.id})}" onsubmit="return confirm(&#x27;Supprimer cet enregistrement ?&#x27;)">
+        <button>Supprimer</button>
+      </form>
+    </main>
+  </body>
+</html>

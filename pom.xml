@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+ <modelVersion>4.0.0</modelVersion><groupId>com.example</groupId>
+ <artifactId>tpe-framework-java-v2</artifactId><version>2.0.0</version><packaging>pom</packaging>
+ <modules><module>01-tournois</module><module>02-textile</module><module>03-taxis</module><module>04-parking</module><module>05-livraison</module></modules>
+</project>

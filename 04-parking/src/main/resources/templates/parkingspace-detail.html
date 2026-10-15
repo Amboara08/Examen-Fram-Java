@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>
+        Places 
+        <span th:text="&#x27;#&#x27; + ${record.id}">
+        </span>
+      </h1>
+      <a class="button button-primary" sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" th:href="@{/parking/spaces/{id}/edit(id=${record.id})}"><i class="fa-solid fa-pen"></i> Modifier</a>
+      <a class="button button-secondary" th:href="@{/parking/spaces}"><i class="fa-solid fa-arrow-left"></i> Retour</a>
+      <table>
+        <tr>
+          <th>Numéro</th>
+          <td th:text="${record.number != null ? record.number : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Zone</th>
+          <td th:text="${record.zone != null ? record.zone : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Type</th>
+          <td th:text="${record.type != null ? record.type : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Statut</th>
+          <td th:text="${record.status != null ? record.status : &#x27;—&#x27;}">
+          </td>
+        </tr>
+      </table>
+      <h2>Historique</h2>
+      <ul>
+        <li th:each="e : ${audit}">
+          <strong th:text="${e.action}">
+          </strong>
+          <span th:text="${e.actor + &#x27; · &#x27; + #temporals.format(e.occurredAt,&#x27;dd/MM/yyyy HH:mm&#x27;)}">
+          </span>
+        </li>
+      </ul>
+      <form sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" method="post" th:action="@{/parking/spaces/{id}/delete(id=${record.id})}" onsubmit="return confirm(&#x27;Supprimer cet enregistrement ?&#x27;)">
+        <button class="button-danger"><i class="fa-solid fa-trash"></i> Supprimer</button>
+      </form>
+    </main>
+  </body>
+</html>

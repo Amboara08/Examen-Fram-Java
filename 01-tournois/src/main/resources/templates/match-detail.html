@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>
+        Matchs 
+        <span th:text="&#x27;#&#x27; + ${record.id}">
+        </span>
+      </h1>
+      <a sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" th:href="@{/matches/{id}/edit(id=${record.id})}">Modifier</a>
+      <a th:href="@{/matches}">Retour</a>
+      <table>
+        <tr>
+          <th>Tournoi</th>
+          <td th:text="${record.tournamentId != null ? record.tournamentId : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Domicile</th>
+          <td th:text="${record.homeTeamId != null ? record.homeTeamId : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Extérieur</th>
+          <td th:text="${record.awayTeamId != null ? record.awayTeamId : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Date et heure</th>
+          <td th:text="${record.scheduledAt != null ? record.scheduledAt : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Terrain</th>
+          <td th:text="${record.location != null ? record.location : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Tour</th>
+          <td th:text="${record.roundNumber != null ? record.roundNumber : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Position</th>
+          <td th:text="${record.position != null ? record.position : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Statut</th>
+          <td th:text="${record.status != null ? record.status : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Score domicile</th>
+          <td th:text="${record.homeScore != null ? record.homeScore : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Score extérieur</th>
+          <td th:text="${record.awayScore != null ? record.awayScore : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Vainqueur</th>
+          <td th:text="${record.winnerId != null ? record.winnerId : &#x27;—&#x27;}">
+          </td>
+        </tr>
+      </table>
+      <div sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;,&#x27;OPERATOR&#x27;)">
+        <form th:if="${record.homeTeamId != null and record.awayTeamId != null and tournament.status == &#x27;EN_COURS&#x27;}" method="post" th:action="@{/matches/{id}/actions/result(id=${record.id})}">
+          <h3>Enregistrer le résultat</h3>
+          <label>
+            Score domicile
+            <input name="homeScore" type="number" min="0" required>
+          </label>
+          <label>
+            Score extérieur
+            <input name="awayScore" type="number" min="0" required>
+          </label>
+          <button>Enregistrer le résultat</button>
+        </form>
+      </div>
+      <h2>Historique</h2>
+      <ul>
+        <li th:each="e : ${audit}">
+          <strong th:text="${e.action}">
+          </strong>
+          <span th:text="${e.actor + &#x27; · &#x27; + #temporals.format(e.occurredAt,&#x27;dd/MM/yyyy HH:mm&#x27;)}">
+          </span>
+        </li>
+      </ul>
+      <form sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" method="post" th:action="@{/matches/{id}/delete(id=${record.id})}" onsubmit="return confirm(&#x27;Supprimer cet enregistrement ?&#x27;)">
+        <button>Supprimer</button>
+      </form>
+    </main>
+  </body>
+</html>

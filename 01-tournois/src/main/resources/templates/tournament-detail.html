@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>
+        Tournois 
+        <span th:text="&#x27;#&#x27; + ${record.id}">
+        </span>
+      </h1>
+      <a sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" th:href="@{/tournaments/{id}/edit(id=${record.id})}">Modifier</a>
+      <a th:href="@{/tournaments}">Retour</a>
+      <table>
+        <tr>
+          <th>Nom</th>
+          <td th:text="${record.name != null ? record.name : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Sport</th>
+          <td th:text="${record.sport != null ? record.sport : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Description</th>
+          <td th:text="${record.description != null ? record.description : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Début</th>
+          <td th:text="${record.startDate != null ? record.startDate : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Fin</th>
+          <td th:text="${record.endDate != null ? record.endDate : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Lieu</th>
+          <td th:text="${record.location != null ? record.location : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Équipes maximum</th>
+          <td th:text="${record.maxTeams != null ? record.maxTeams : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Format</th>
+          <td th:text="${record.format != null ? record.format : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Critères de classement</th>
+          <td th:text="${record.rankingCriteria != null ? record.rankingCriteria : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Statut</th>
+          <td th:text="${record.status != null ? record.status : &#x27;—&#x27;}">
+          </td>
+        </tr>
+      </table>
+      <h2>Inscriptions</h2>
+      <ul>
+        <li th:each="r : ${registrations}">
+          <span th:text="&#x27;Équipe n° &#x27; + ${r.teamId}">
+          </span>
+          <form sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;,&#x27;OPERATOR&#x27;)" method="post" th:action="@{/tournaments/{id}/actions/remove-team(id=${record.id})}">
+            <input type="hidden" name="teamId" th:value="${r.teamId}">
+            <button>Retirer</button>
+          </form>
+        </li>
+      </ul>
+      <h2>Calendrier</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Tournoi</th>
+            <th>Domicile</th>
+            <th>Extérieur</th>
+            <th>Date et heure</th>
+            <th>Terrain</th>
+            <th>Tour</th>
+            <th>Statut</th>
+            <th>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="row : ${matches}">
+            <td th:text="${row.id}">
+            </td>
+            <td>
+              <span th:text="${row.tournamentId}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.homeTeamId}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.awayTeamId}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.scheduledAt}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.location}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.roundNumber}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.status}">
+              </span>
+            </td>
+            <td>
+              <a th:href="@{/matches/{id}(id=${row.id})}">Ouvrir</a>
+            </td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(matches)}">
+            <td colspan="20">Aucun enregistrement</td>
+          </tr>
+        </tbody>
+      </table>
+      <div th:if="${record.format == &#x27;ELIMINATION&#x27;}">
+        <div th:each="round : ${#numbers.sequence(1, matches.isEmpty() ? 1 : matches[matches.size()-1].roundNumber)}">
+          <h3 th:text="&#x27;Tour &#x27; + ${round}">
+          </h3>
+          <div th:each="match : ${matches}" th:if="${match.roundNumber == round}">
+            <a th:href="@{/matches/{id}(id=${match.id})}" th:text="${(match.homeTeamId != null ? &#x27;Équipe &#x27; + match.homeTeamId : &#x27;À qualifier&#x27;) + &#x27; / &#x27; + (match.awayTeamId != null ? &#x27;Équipe &#x27; + match.awayTeamId : &#x27;À qualifier&#x27;)}">
+            </a>
+            <div th:text="${match.status}">
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2>Classement</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Équipe</th>
+            <th>J</th>
+            <th>V</th>
+            <th>N</th>
+            <th>D</th>
+            <th>Pts</th>
+            <th>BP</th>
+            <th>BC</th>
+            <th>Diff.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="r : ${ranking}">
+            <td th:text="${r.name}">
+            </td>
+            <td th:text="${r.played}">
+            </td>
+            <td th:text="${r.wins}">
+            </td>
+            <td th:text="${r.draws}">
+            </td>
+            <td th:text="${r.losses}">
+            </td>
+            <td th:text="${r.points}">
+            </td>
+            <td th:text="${r.goalsFor}">
+            </td>
+            <td th:text="${r.goalsAgainst}">
+            </td>
+            <td th:text="${r.difference}">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;,&#x27;OPERATOR&#x27;)">
+        <form th:if="${record.status == &#x27;BROUILLON&#x27; or record.status == &#x27;INSCRIPTION&#x27;}" method="post" th:action="@{/tournaments/{id}/actions/generate-matches(id=${record.id})}">
+          <h3>Générer le calendrier</h3>
+          <button>Générer le calendrier</button>
+        </form>
+        <form th:if="${record.status != &#x27;TERMINE&#x27; and record.status != &#x27;ANNULE&#x27;}" method="post" th:action="@{/tournaments/{id}/actions/status(id=${record.id})}">
+          <h3>Changer le statut</h3>
+          <label>
+            Statut
+            <select name="status">
+              <option value="INSCRIPTION">Inscription</option>
+              <option value="EN_COURS">En cours</option>
+              <option value="TERMINE">Termine</option>
+              <option value="ANNULE">Annule</option>
+            </select>
+          </label>
+          <button>Changer le statut</button>
+        </form>
+        <form th:if="${record.status == &#x27;BROUILLON&#x27; or record.status == &#x27;INSCRIPTION&#x27;}" method="post" th:action="@{/tournaments/{id}/actions/teams(id=${record.id})}">
+          <h3>Inscrire une équipe</h3>
+          <label>
+            Équipe
+            <select name="teamId">
+              <option th:each="t : ${teams}" th:value="${t.id}" th:text="${t.name}">
+              </option>
+            </select>
+          </label>
+          <button>Inscrire une équipe</button>
+        </form>
+      </div>
+      <h2>Historique</h2>
+      <ul>
+        <li th:each="e : ${audit}">
+          <strong th:text="${e.action}">
+          </strong>
+          <span th:text="${e.actor + &#x27; · &#x27; + #temporals.format(e.occurredAt,&#x27;dd/MM/yyyy HH:mm&#x27;)}">
+          </span>
+        </li>
+      </ul>
+      <form sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" method="post" th:action="@{/tournaments/{id}/delete(id=${record.id})}" onsubmit="return confirm(&#x27;Supprimer cet enregistrement ?&#x27;)">
+        <button>Supprimer</button>
+      </form>
+    </main>
+  </body>
+</html>

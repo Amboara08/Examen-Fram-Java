@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>
+        Abonnements 
+        <span th:text="&#x27;#&#x27; + ${record.id}">
+        </span>
+      </h1>
+      <a sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" th:href="@{/subscriptions/{id}/edit(id=${record.id})}">Modifier</a>
+      <a th:href="@{/subscriptions}">Retour</a>
+      <table>
+        <tr>
+          <th>Usager</th>
+          <td th:text="${record.customerId != null ? record.customerId : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Véhicule</th>
+          <td th:text="${record.vehicleId != null ? record.vehicleId : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Formule</th>
+          <td th:text="${record.type != null ? record.type : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Début</th>
+          <td th:text="${record.startDate != null ? record.startDate : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Fin</th>
+          <td th:text="${record.endDate != null ? record.endDate : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Statut</th>
+          <td th:text="${record.status != null ? record.status : &#x27;—&#x27;}">
+          </td>
+        </tr>
+      </table>
+      <div th:text="${valid ? &#x27;Abonnement valide&#x27; : &#x27;Abonnement non valide&#x27;}">
+      </div>
+      <div sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;,&#x27;OPERATOR&#x27;)">
+        <form th:if="${record.status == &#x27;CONFIRMEE&#x27; or record.status == &#x27;ACTIF&#x27;}" method="post" th:action="@{/subscriptions/{id}/actions/cancel(id=${record.id})}">
+          <h3>Annuler</h3>
+          <button>Annuler</button>
+        </form>
+      </div>
+      <h2>Historique</h2>
+      <ul>
+        <li th:each="e : ${audit}">
+          <strong th:text="${e.action}">
+          </strong>
+          <span th:text="${e.actor + &#x27; · &#x27; + #temporals.format(e.occurredAt,&#x27;dd/MM/yyyy HH:mm&#x27;)}">
+          </span>
+        </li>
+      </ul>
+      <form sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" method="post" th:action="@{/subscriptions/{id}/delete(id=${record.id})}" onsubmit="return confirm(&#x27;Supprimer cet enregistrement ?&#x27;)">
+        <button>Supprimer</button>
+      </form>
+    </main>
+  </body>
+</html>

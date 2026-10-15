@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>
+        Commandes 
+        <span th:text="&#x27;#&#x27; + ${record.id}">
+        </span>
+      </h1>
+      <a sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" th:href="@{/orders/{id}/edit(id=${record.id})}">Modifier</a>
+      <a th:href="@{/orders}">Retour</a>
+      <table>
+        <tr>
+          <th>Numéro</th>
+          <td th:text="${record.number != null ? record.number : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Client</th>
+          <td th:text="${record.clientId != null ? record.clientId : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Date commande</th>
+          <td th:text="${record.orderDate != null ? record.orderDate : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Livraison prévue</th>
+          <td th:text="${record.deliveryDate != null ? record.deliveryDate : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Priorité</th>
+          <td th:text="${record.priority != null ? record.priority : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Statut</th>
+          <td th:text="${record.status != null ? record.status : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Livraison réelle</th>
+          <td th:text="${record.deliveredAt != null ? record.deliveredAt : &#x27;—&#x27;}">
+          </td>
+        </tr>
+      </table>
+      <h2>Lignes</h2>
+      <a th:href="@{/order-lines/new}">Ajouter une ligne</a>
+      <table>
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Commande</th>
+            <th>Produit</th>
+            <th>Quantité</th>
+            <th>Taille</th>
+            <th>Couleur</th>
+            <th>Prix unitaire</th>
+            <th>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="row : ${lines}">
+            <td th:text="${row.id}">
+            </td>
+            <td>
+              <span th:text="${row.orderId}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.productId}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.quantity}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.size}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.color}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.unitPrice}">
+              </span>
+            </td>
+            <td>
+              <a th:href="@{/order-lines/{id}(id=${row.id})}">Ouvrir</a>
+            </td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(lines)}">
+            <td colspan="20">Aucun enregistrement</td>
+          </tr>
+        </tbody>
+      </table>
+      <h2>Production</h2>
+      <div th:each="s : ${steps}">
+        <h3 th:text="${s.type}">
+        </h3>
+        <span th:text="${s.status}">
+        </span>
+        <p th:text="${s.quantity} + &#x27; pièce(s)&#x27;">
+        </p>
+        <span th:text="${s.responsible}">
+        </span>
+      </div>
+      <h2>Délais</h2>
+      <table>
+        <tr th:each="d : ${delays}">
+          <th th:text="${d.key}">
+          </th>
+          <td th:text="${d.value}">
+          </td>
+        </tr>
+        <tr>
+          <th>Livraison prévisionnelle</th>
+          <td th:text="${forecast}">
+          </td>
+        </tr>
+      </table>
+      <h2>Contrôles qualité</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Commande</th>
+            <th>Résultat</th>
+            <th>Responsable</th>
+            <th>Commentaire</th>
+            <th>Date</th>
+            <th>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="row : ${quality}">
+            <td th:text="${row.id}">
+            </td>
+            <td>
+              <span th:text="${row.orderId}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.result}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.responsible}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.comment}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.checkedAt}">
+              </span>
+            </td>
+            <td>
+              <a th:href="@{/quality-controls/{id}(id=${row.id})}">Ouvrir</a>
+            </td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(quality)}">
+            <td colspan="20">Aucun enregistrement</td>
+          </tr>
+        </tbody>
+      </table>
+      <div sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;,&#x27;OPERATOR&#x27;)">
+        <form th:if="${record.status == &#x27;COMMANDE&#x27;}" method="post" th:action="@{/orders/{id}/actions/production/start(id=${record.id})}">
+          <h3>Démarrer la production</h3>
+          <button>Démarrer la production</button>
+        </form>
+        <form th:if="${record.status == &#x27;COUPE&#x27;}" method="post" th:action="@{/orders/{id}/actions/COUPE(id=${record.id})}">
+          <h3>Terminer la coupe</h3>
+          <label>
+            Quantité
+            <input name="quantity" type="number" min="0" required>
+          </label>
+          <label>
+            Responsable
+            <input name="responsible" type="text" required>
+          </label>
+          <label>
+            Commentaire
+            <input name="comment" type="text">
+          </label>
+          <button>Terminer la coupe</button>
+        </form>
+        <form th:if="${record.status == &#x27;COUTURE&#x27;}" method="post" th:action="@{/orders/{id}/actions/COUTURE(id=${record.id})}">
+          <h3>Terminer la couture</h3>
+          <label>
+            Quantité
+            <input name="quantity" type="number" min="0" required>
+          </label>
+          <label>
+            Responsable
+            <input name="responsible" type="text" required>
+          </label>
+          <label>
+            Commentaire
+            <input name="comment" type="text">
+          </label>
+          <button>Terminer la couture</button>
+        </form>
+        <form th:if="${record.status == &#x27;FINITION&#x27;}" method="post" th:action="@{/orders/{id}/actions/FINITION(id=${record.id})}">
+          <h3>Terminer la finition</h3>
+          <label>
+            Quantité
+            <input name="quantity" type="number" min="0" required>
+          </label>
+          <label>
+            Responsable
+            <input name="responsible" type="text" required>
+          </label>
+          <label>
+            Commentaire
+            <input name="comment" type="text">
+          </label>
+          <button>Terminer la finition</button>
+        </form>
+        <form th:if="${record.status == &#x27;CONTROLE_QUALITE&#x27;}" method="post" th:action="@{/orders/{id}/actions/quality-control(id=${record.id})}">
+          <h3>Contrôle qualité</h3>
+          <label>
+            Résultat
+            <select name="status">
+              <option value="CONFORME">Conforme</option>
+              <option value="NON_CONFORME">Non conforme</option>
+            </select>
+          </label>
+          <label>
+            Responsable
+            <input name="responsible" type="text" required>
+          </label>
+          <label>
+            Commentaire
+            <input name="comment" type="text">
+          </label>
+          <button>Contrôle qualité</button>
+        </form>
+        <form th:if="${record.status == &#x27;CONTROLE_QUALITE&#x27; and !quality.isEmpty() and quality[quality.size()-1].result == &#x27;CONFORME&#x27;}" method="post" th:action="@{/orders/{id}/actions/delivery(id=${record.id})}">
+          <h3>Livrer</h3>
+          <button>Livrer</button>
+        </form>
+      </div>
+      <h2>Historique</h2>
+      <ul>
+        <li th:each="e : ${audit}">
+          <strong th:text="${e.action}">
+          </strong>
+          <span th:text="${e.actor + &#x27; · &#x27; + #temporals.format(e.occurredAt,&#x27;dd/MM/yyyy HH:mm&#x27;)}">
+          </span>
+        </li>
+      </ul>
+      <form sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" method="post" th:action="@{/orders/{id}/delete(id=${record.id})}" onsubmit="return confirm(&#x27;Supprimer cet enregistrement ?&#x27;)">
+        <button>Supprimer</button>
+      </form>
+    </main>
+  </body>
+</html>

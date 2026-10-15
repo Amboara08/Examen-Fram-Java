@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1 th:text="${editing ? &#x27;Modifier le client et sa voiture&#x27; : &#x27;Ajouter un client et sa voiture&#x27;}">
+      </h1>
+      <a class="button button-secondary" th:href="@{/users}"><i class="fa-solid fa-arrow-left"></i> Retour</a>
+      <form method="post" th:action="${editing ? path + &#x27;/&#x27; + id + &#x27;/edit&#x27; : path}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <label>
+          Nom
+          <input name="name" type="text" required th:value="${record != null ? record.name : null}">
+        </label>
+        <label>
+          E-mail
+          <input name="email" type="email" required th:value="${record != null ? record.email : null}">
+        </label>
+        <label>
+          Téléphone
+          <input name="phone" type="text" required th:value="${record != null ? record.phone : null}">
+        </label>
+        <label>
+          Mot de passe
+          <input name="password" type="password" minlength="8" th:required="${!editing}" autocomplete="new-password" th:placeholder="${editing ? 'Laisser vide pour conserver le mot de passe' : '8 caractères minimum'}">
+        </label>
+        <label>
+          Catégorie
+          <select name="type">
+            <option value="STANDARD" th:selected="${record != null and record.type == &#x27;STANDARD&#x27;}">Standard</option>
+            <option value="PMR" th:selected="${record != null and record.type == &#x27;PMR&#x27;}">Pmr</option>
+            <option value="VIP" th:selected="${record != null and record.type == &#x27;VIP&#x27;}">Vip</option>
+            <option value="ABONNE" th:selected="${record != null and record.type == &#x27;ABONNE&#x27;}">Abonne</option>
+          </select>
+        </label>
+        <h2><i class="fa-solid fa-car-side"></i> Voiture du client</h2>
+        <p class="form-help"><i class="fa-solid fa-circle-info"></i> Une voiture est obligatoire pour créer le compte client.</p>
+        <label>
+          Immatriculation
+          <input name="plate" type="text" required maxlength="40" placeholder="Ex. 1234 TAA" th:value="${vehicle != null ? vehicle.plate : null}">
+        </label>
+        <label>
+          Type de véhicule
+          <select name="vehicleType" required>
+            <option value="VOITURE" th:selected="${vehicle == null or vehicle.type == 'VOITURE'}">Voiture</option>
+            <option value="MOTO" th:selected="${vehicle != null and vehicle.type == 'MOTO'}">Moto</option>
+            <option value="UTILITAIRE" th:selected="${vehicle != null and vehicle.type == 'UTILITAIRE'}">Utilitaire</option>
+          </select>
+        </label>
+        <label>
+          Marque
+          <input name="brand" type="text" required maxlength="120" placeholder="Ex. Toyota" th:value="${vehicle != null ? vehicle.brand : null}">
+        </label>
+        <label>
+          Modèle
+          <input name="vehicleModel" type="text" required maxlength="120" placeholder="Ex. Corolla" th:value="${vehicle != null ? vehicle.model : null}">
+        </label>
+        <button class="button-success"><i class="fa-solid fa-floppy-disk"></i> Enregistrer le compte</button>
+        <a class="button button-secondary" th:href="@{/users}"><i class="fa-solid fa-xmark"></i> Annuler</a>
+      </form>
+    </main>
+  </body>
+</html>

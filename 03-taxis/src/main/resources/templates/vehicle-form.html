@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1 th:text="${editing ? &#x27;Modifier&#x27; : &#x27;Ajouter&#x27;}">
+      </h1>
+      <a th:href="@{/vehicles}">Retour</a>
+      <form method="post" th:action="${editing ? path + &#x27;/&#x27; + id + &#x27;/edit&#x27; : path}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <label>
+          Immatriculation
+          <input name="plate" type="text" required th:value="${record != null ? record.plate : null}">
+        </label>
+        <label>
+          Marque
+          <input name="brand" type="text" required th:value="${record != null ? record.brand : null}">
+        </label>
+        <label>
+          Modèle
+          <input name="model" type="text" required th:value="${record != null ? record.model : null}">
+        </label>
+        <label>
+          Année
+          <input name="year" type="number" required min="1" th:value="${record != null ? record.year : null}">
+        </label>
+        <label>
+          Places
+          <input name="capacity" type="number" required min="1" th:value="${record != null ? record.capacity : null}">
+        </label>
+        <label>
+          Kilométrage
+          <input name="mileage" type="number" required step="0.01" min="0" th:value="${record != null ? record.mileage : null}">
+        </label>
+        <label>
+          Statut
+          <select name="status">
+            <option value="DISPONIBLE" th:selected="${record != null and record.status == &#x27;DISPONIBLE&#x27;}">Disponible</option>
+            <option value="MAINTENANCE" th:selected="${record != null and record.status == &#x27;MAINTENANCE&#x27;}">Maintenance</option>
+            <option value="HORS_SERVICE" th:selected="${record != null and record.status == &#x27;HORS_SERVICE&#x27;}">Hors service</option>
+          </select>
+        </label>
+        <button>Enregistrer</button>
+        <a th:href="@{/vehicles}">Annuler</a>
+      </form>
+    </main>
+  </body>
+</html>

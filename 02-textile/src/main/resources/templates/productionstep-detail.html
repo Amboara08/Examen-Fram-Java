@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>
+        Étapes 
+        <span th:text="&#x27;#&#x27; + ${record.id}">
+        </span>
+      </h1>
+      <a sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" th:href="@{/production-steps/{id}/edit(id=${record.id})}">Modifier</a>
+      <a th:href="@{/production-steps}">Retour</a>
+      <table>
+        <tr>
+          <th>Commande</th>
+          <td th:text="${record.orderId != null ? record.orderId : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Étape</th>
+          <td th:text="${record.type != null ? record.type : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Responsable</th>
+          <td th:text="${record.responsible != null ? record.responsible : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Début prévu</th>
+          <td th:text="${record.plannedStart != null ? record.plannedStart : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Fin prévue</th>
+          <td th:text="${record.plannedEnd != null ? record.plannedEnd : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Commentaire</th>
+          <td th:text="${record.comment != null ? record.comment : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Statut</th>
+          <td th:text="${record.status != null ? record.status : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Début réel</th>
+          <td th:text="${record.startedAt != null ? record.startedAt : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Fin réelle</th>
+          <td th:text="${record.completedAt != null ? record.completedAt : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Quantité</th>
+          <td th:text="${record.quantity != null ? record.quantity : &#x27;—&#x27;}">
+          </td>
+        </tr>
+      </table>
+      <h2>Historique</h2>
+      <ul>
+        <li th:each="e : ${audit}">
+          <strong th:text="${e.action}">
+          </strong>
+          <span th:text="${e.actor + &#x27; · &#x27; + #temporals.format(e.occurredAt,&#x27;dd/MM/yyyy HH:mm&#x27;)}">
+          </span>
+        </li>
+      </ul>
+      <form sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" method="post" th:action="@{/production-steps/{id}/delete(id=${record.id})}" onsubmit="return confirm(&#x27;Supprimer cet enregistrement ?&#x27;)">
+        <button>Supprimer</button>
+      </form>
+    </main>
+  </body>
+</html>

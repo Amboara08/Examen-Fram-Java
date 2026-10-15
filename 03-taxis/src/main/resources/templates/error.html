@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>Opération impossible</h1>
+      <p th:text="${message != null ? message : &#x27;Accès refusé ou page introuvable&#x27;}">
+      </p>
+      <a th:href="@{/}">Tableau de bord</a>
+    </main>
+  </body>
+</html>

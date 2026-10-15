@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>
+        Réservations 
+        <span th:text="&#x27;#&#x27; + ${record.id}">
+        </span>
+      </h1>
+      <a class="button button-primary" sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" th:href="@{/reservations/{id}/edit(id=${record.id})}"><i class="fa-solid fa-pen"></i> Modifier</a>
+      <a class="button button-secondary" th:href="@{/reservations}"><i class="fa-solid fa-arrow-left"></i> Retour</a>
+      <table>
+        <tr>
+          <th>Usager</th>
+          <td th:text="${customer.name}">
+          </td>
+        </tr>
+        <tr>
+          <th>Véhicule</th>
+          <td th:text="${vehicle.plate + ' · ' + vehicle.brand + ' ' + vehicle.model}">
+          </td>
+        </tr>
+        <tr>
+          <th>Place (automatique si vide)</th>
+          <td th:text="${record.spaceId != null ? record.spaceId : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Arrivée prévue</th>
+          <td th:text="${record.arrival != null ? record.arrival : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Départ prévu</th>
+          <td th:text="${record.departure != null ? record.departure : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Statut</th>
+          <td th:text="${record.status != null ? record.status : &#x27;—&#x27;}">
+          </td>
+        </tr>
+      </table>
+      <div sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;,&#x27;OPERATOR&#x27;)">
+        <form th:if="${record.status == &#x27;CONFIRMEE&#x27; or record.status == &#x27;ACTIF&#x27;}" method="post" th:action="@{/reservations/{id}/actions/cancel(id=${record.id})}">
+          <h3>Annuler</h3>
+          <button class="button-danger"><i class="fa-solid fa-ban"></i> Annuler la réservation</button>
+        </form>
+      </div>
+      <h2>Historique</h2>
+      <ul>
+        <li th:each="e : ${audit}">
+          <strong th:text="${e.action}">
+          </strong>
+          <span th:text="${e.actor + &#x27; · &#x27; + #temporals.format(e.occurredAt,&#x27;dd/MM/yyyy HH:mm&#x27;)}">
+          </span>
+        </li>
+      </ul>
+      <form sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" method="post" th:action="@{/reservations/{id}/delete(id=${record.id})}" onsubmit="return confirm(&#x27;Supprimer cet enregistrement ?&#x27;)">
+        <button class="button-danger"><i class="fa-solid fa-trash"></i> Supprimer</button>
+      </form>
+    </main>
+  </body>
+</html>

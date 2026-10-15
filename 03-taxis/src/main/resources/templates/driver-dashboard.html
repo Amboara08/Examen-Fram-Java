@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="portal-page">
+<header th:replace="~{layout :: header}"></header>
+<main class="portal-main">
+  <div th:replace="~{layout :: notices}"></div>
+  <section class="portal-hero driver-hero"><div><span class="eyebrow"><i class="fa-solid fa-id-card"></i> Espace chauffeur</span><h1 th:text="'Bonjour, ' + ${driver.name}">Bonjour</h1><p><i class="fa-solid fa-car-side"></i> <span th:text="${vehicle.brand + ' ' + vehicle.model + ' · ' + vehicle.plate}"></span></p></div><i class="fa-solid fa-steering-wheel hero-icon"></i></section>
+
+  <section class="portal-card">
+    <div class="section-title"><div><h2><i class="fa-solid fa-bell"></i> Demandes disponibles</h2><p>Vous pouvez prendre directement une demande compatible avec votre voiture.</p></div></div>
+    <div class="table-wrap"><table><thead><tr><th>Trajet</th><th>Date</th><th>Distance</th><th>Passagers</th><th>Prix</th><th></th></tr></thead><tbody>
+      <tr th:each="ride : ${available}"><td><strong th:text="${ride.departure}"></strong><br><span class="muted"><i class="fa-solid fa-arrow-right"></i> <span th:text="${ride.destination}"></span></span></td><td th:text="${#temporals.format(ride.scheduledAt,'dd/MM/yyyy HH:mm')}"></td><td th:text="${ride.distance + ' km'}"></td><td th:text="${ride.passengers}"></td><td th:text="${ride.fare + ' €'}"></td><td><form class="inline-form" method="post" th:action="@{/chauffeur/rides/{id}/accept(id=${ride.id})}"><button class="success-button" type="submit"><i class="fa-solid fa-check"></i> Prendre</button></form></td></tr>
+      <tr th:if="${#lists.isEmpty(available)}"><td colspan="6" class="empty-state"><i class="fa-solid fa-circle-check"></i> Aucune nouvelle demande</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section class="portal-card"><div class="section-title"><h2><i class="fa-solid fa-route"></i> Mes courses</h2></div><div class="table-wrap"><table><thead><tr><th>Client</th><th>Trajet</th><th>Statut</th><th>Contact</th><th>Action</th></tr></thead><tbody>
+    <tr th:each="ride : ${mine}"><td><th:block th:each="c : ${clients}" th:if="${c.id == ride.clientId}"><strong th:text="${c.name}"></strong></th:block></td><td><span th:text="${ride.departure}"></span><br><span class="muted" th:text="${ride.destination}"></span></td><td><span class="status-badge" th:classappend="${' status-' + #strings.toLowerCase(ride.status)}" th:text="${#strings.replace(ride.status,'_',' ')}"></span></td><td><th:block th:each="c : ${clients}" th:if="${c.id == ride.clientId}"><a class="contact-link" th:href="${'tel:' + c.phone}"><i class="fa-solid fa-phone"></i> Appeler</a><a class="contact-link" th:href="${'mailto:' + c.email}"><i class="fa-solid fa-envelope"></i> E-mail</a></th:block></td><td><form class="inline-form" th:if="${ride.status == 'ASSIGNEE'}" method="post" th:action="@{/chauffeur/rides/{id}/start(id=${ride.id})}"><button class="button-primary"><i class="fa-solid fa-play"></i> Démarrer</button></form><form class="inline-form" th:if="${ride.status == 'EN_COURS'}" method="post" th:action="@{/chauffeur/rides/{id}/complete(id=${ride.id})}"><button class="success-button"><i class="fa-solid fa-flag-checkered"></i> Terminer</button></form></td></tr>
+    <tr th:if="${#lists.isEmpty(mine)}"><td colspan="5" class="empty-state"><i class="fa-solid fa-road"></i> Aucune course prise en charge</td></tr>
+  </tbody></table></div></section>
+</main>
+</body></html>

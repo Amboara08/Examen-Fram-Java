@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>
+        Produits 
+        <span th:text="&#x27;#&#x27; + ${record.id}">
+        </span>
+      </h1>
+      <a sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" th:href="@{/products/{id}/edit(id=${record.id})}">Modifier</a>
+      <a th:href="@{/products}">Retour</a>
+      <table>
+        <tr>
+          <th>Nom</th>
+          <td th:text="${record.name != null ? record.name : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Référence</th>
+          <td th:text="${record.reference != null ? record.reference : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Description</th>
+          <td th:text="${record.description != null ? record.description : &#x27;—&#x27;}">
+          </td>
+        </tr>
+        <tr>
+          <th>Prix unitaire</th>
+          <td th:text="${record.unitPrice != null ? record.unitPrice : &#x27;—&#x27;}">
+          </td>
+        </tr>
+      </table>
+      <h2>Historique</h2>
+      <ul>
+        <li th:each="e : ${audit}">
+          <strong th:text="${e.action}">
+          </strong>
+          <span th:text="${e.actor + &#x27; · &#x27; + #temporals.format(e.occurredAt,&#x27;dd/MM/yyyy HH:mm&#x27;)}">
+          </span>
+        </li>
+      </ul>
+      <form sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" method="post" th:action="@{/products/{id}/delete(id=${record.id})}" onsubmit="return confirm(&#x27;Supprimer cet enregistrement ?&#x27;)">
+        <button>Supprimer</button>
+      </form>
+    </main>
+  </body>
+</html>

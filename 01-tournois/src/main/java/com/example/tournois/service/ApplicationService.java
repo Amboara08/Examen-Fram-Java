@@ -1,0 +1,42 @@
+package com.example.tournois.service;
+
+import java.time.*;
+import java.math.*;
+import java.util.*;
+import com.example.tournois.dto.request.*;
+import com.example.tournois.dto.response.*;
+import org.springframework.data.domain.Pageable;
+import org.springframework.ui.Model;
+import jakarta.validation.Valid;
+public interface ApplicationService {
+    PageResponse<TeamResponse> listTeam(String q,String status,String filter,Pageable pageable);
+    TeamResponse getTeam(Long id);
+    TeamResponse createTeam(@Valid TeamRequest request);
+    TeamResponse updateTeam(Long id,@Valid TeamRequest request);
+    void deleteTeam(Long id);
+    List<PlayerResponse> listPlayers(Long teamId);
+    PlayerResponse addPlayer(Long teamId, @Valid PlayerRequest request);
+    void deletePlayer(Long teamId, Long playerId);
+    PageResponse<TournamentResponse> listTournament(String q,String status,String filter,Pageable pageable);
+    TournamentResponse getTournament(Long id);
+    TournamentResponse createTournament(@Valid TournamentRequest request);
+    TournamentResponse updateTournament(Long id,@Valid TournamentRequest request);
+    void deleteTournament(Long id);
+    PageResponse<RegistrationResponse> listRegistration(String q,String status,String filter,Pageable pageable);
+    RegistrationResponse getRegistration(Long id);
+    RegistrationResponse createRegistration(@Valid RegistrationRequest request);
+    RegistrationResponse updateRegistration(Long id,@Valid RegistrationRequest request);
+    void deleteRegistration(Long id);
+    PageResponse<MatchResponse> listMatch(String q,String status,String filter,Pageable pageable);
+    MatchResponse getMatch(Long id);
+    MatchResponse createMatch(@Valid MatchRequest request);
+    MatchResponse updateMatch(Long id,@Valid MatchRequest request);
+    void deleteMatch(Long id);
+    List<AuditResponse> history(String resource,Long id);
+    List<SettingResponse> settings();
+    void setting(@Valid SettingRequest request);
+    AnalyticsResponse statistics(LocalDate from,LocalDate to,Long actorId,String zone);
+    void detail(String resource,Long id,Model model);
+    Object perform(String resource,Long id,String operation,@Valid ActionRequest request);
+    List<RankingResponse> ranking(Long id);
+}

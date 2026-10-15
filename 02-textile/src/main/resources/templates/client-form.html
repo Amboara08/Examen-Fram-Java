@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1 th:text="${editing ? &#x27;Modifier&#x27; : &#x27;Ajouter&#x27;}">
+      </h1>
+      <a th:href="@{/clients}">Retour</a>
+      <form method="post" th:action="${editing ? path + &#x27;/&#x27; + id + &#x27;/edit&#x27; : path}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <label>
+          Nom
+          <input name="name" type="text" required th:value="${record != null ? record.name : null}">
+        </label>
+        <label>
+          E-mail
+          <input name="email" type="email" required th:value="${record != null ? record.email : null}">
+        </label>
+        <label>
+          Téléphone
+          <input name="phone" type="text" required th:value="${record != null ? record.phone : null}">
+        </label>
+        <label>
+          Adresse
+          <input name="address" type="text" required th:value="${record != null ? record.address : null}">
+        </label>
+        <button>Enregistrer</button>
+        <a th:href="@{/clients}">Annuler</a>
+      </form>
+    </main>
+  </body>
+</html>

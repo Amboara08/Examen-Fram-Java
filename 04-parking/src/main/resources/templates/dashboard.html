@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>Vue d'ensemble du parking</h1>
+      <h2><i class="fa-solid fa-border-all"></i> Plan des places</h2>
+      <div class="places">
+        <a class="place" th:each="s : ${spaces}" th:href="@{/parking/spaces/{id}(id=${s.id})}" th:text="${s.number + &#x27; / &#x27; + s.type + &#x27; / &#x27; + s.status}">
+        </a>
+      </div>
+    </main>
+  </body>
+</html>

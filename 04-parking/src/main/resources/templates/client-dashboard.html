@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${title}">Mon espace parking</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="client-portal">
+  <header class="client-header">
+    <a class="client-brand" th:href="@{/client}"><i class="fa-solid fa-square-parking"></i> ParkFlow</a>
+    <div><i class="fa-solid fa-circle-user"></i><span th:text="${customer.name}">Client</span>
+      <form method="post" th:action="@{/logout}"><button><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</button></form>
+    </div>
+  </header>
+  <nav class="client-nav">
+    <a href="#profil"><i class="fa-solid fa-user"></i> Mon profil</a>
+    <a href="#vehicule"><i class="fa-solid fa-car-side"></i> Ma voiture</a>
+    <a href="#reservations"><i class="fa-solid fa-calendar-check"></i> Mes réservations</a>
+    <a href="#historique"><i class="fa-solid fa-clock-rotate-left"></i> Mon historique</a>
+  </nav>
+  <main class="client-main">
+    <section class="client-welcome">
+      <div><span class="eyebrow">ESPACE CLIENT</span><h1 th:text="'Bonjour, ' + ${customer.name}">Bonjour</h1>
+        <p>Retrouvez ici uniquement les informations liées à votre stationnement.</p></div>
+      <i class="fa-solid fa-car-rear"></i>
+    </section>
+
+    <section id="profil" class="client-card">
+      <h2><i class="fa-solid fa-user"></i> Mon profil</h2>
+      <dl class="profile-grid">
+        <div><dt>Nom</dt><dd th:text="${customer.name}">Nom</dd></div>
+        <div><dt>E-mail</dt><dd th:text="${customer.email}">email</dd></div>
+        <div><dt>Téléphone</dt><dd th:text="${customer.phone}">Téléphone</dd></div>
+        <div><dt>Catégorie</dt><dd th:text="${customer.type}">Standard</dd></div>
+      </dl>
+    </section>
+
+    <section id="vehicule" class="client-card">
+      <h2><i class="fa-solid fa-car-side"></i> Ma voiture</h2>
+      <div class="responsive-table"><table><thead><tr><th>Immatriculation</th><th>Type</th><th>Marque</th><th>Modèle</th></tr></thead><tbody>
+        <tr th:each="vehicle : ${vehicles}"><td th:text="${vehicle.plate}">Plaque</td><td th:text="${vehicle.type}">Type</td><td th:text="${vehicle.brand}">Marque</td><td th:text="${vehicle.model}">Modèle</td></tr>
+        <tr th:if="${#lists.isEmpty(vehicles)}"><td colspan="4" class="empty-state">Aucune voiture enregistrée</td></tr>
+      </tbody></table></div>
+    </section>
+
+    <section id="reservations" class="client-card">
+      <h2><i class="fa-solid fa-calendar-check"></i> Mes réservations</h2>
+      <div class="responsive-table"><table><thead><tr><th>Arrivée</th><th>Départ</th><th>Place</th><th>Statut</th></tr></thead><tbody>
+        <tr th:each="reservation : ${reservations}"><td th:text="${#temporals.format(reservation.arrival,'dd/MM/yyyy HH:mm')}">Arrivée</td><td th:text="${#temporals.format(reservation.departure,'dd/MM/yyyy HH:mm')}">Départ</td><td th:text="${reservation.spaceId}">Place</td><td><span class="client-status" th:text="${reservation.status}">Statut</span></td></tr>
+        <tr th:if="${#lists.isEmpty(reservations)}"><td colspan="4" class="empty-state">Aucune réservation</td></tr>
+      </tbody></table></div>
+    </section>
+
+    <section id="historique" class="client-card">
+      <h2><i class="fa-solid fa-clock-rotate-left"></i> Mes entrées et sorties</h2>
+      <div class="responsive-table"><table><thead><tr><th>Entrée</th><th>Sortie</th><th>Montant</th><th>Statut</th></tr></thead><tbody>
+        <tr th:each="stay : ${stays}"><td th:text="${stay.enteredAt != null ? #temporals.format(stay.enteredAt,'dd/MM/yyyy HH:mm') : '—'}">Entrée</td><td th:text="${stay.exitedAt != null ? #temporals.format(stay.exitedAt,'dd/MM/yyyy HH:mm') : '—'}">Sortie</td><td th:text="${stay.amount != null ? stay.amount + ' FCFA' : '—'}">Montant</td><td><span class="client-status" th:text="${stay.status}">Statut</span></td></tr>
+        <tr th:if="${#lists.isEmpty(stays)}"><td colspan="4" class="empty-state">Aucun passage enregistré</td></tr>
+      </tbody></table></div>
+    </section>
+  </main>
+</body>
+</html>

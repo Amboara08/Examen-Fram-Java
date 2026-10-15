@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>Étapes</h1>
+      <a sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;,&#x27;OPERATOR&#x27;)" th:href="@{/production-steps/new}">Ajouter</a>
+      <form method="get">
+        <label>
+          Recherche
+          <input name="q" placeholder="Rechercher" th:value="${q}">
+        </label>
+        <label>
+          Étape
+          <select name="filter">
+            <option value="">Tous</option>
+            <option value="type:COUPE" th:selected="${filter == &#x27;type:COUPE&#x27;}">Coupe</option>
+            <option value="type:COUTURE" th:selected="${filter == &#x27;type:COUTURE&#x27;}">Couture</option>
+            <option value="type:FINITION" th:selected="${filter == &#x27;type:FINITION&#x27;}">Finition</option>
+          </select>
+        </label>
+        <label>
+          Tri
+          <select name="sort">
+            <option value="id,desc">Plus récents</option>
+            <option value="id,asc">Plus anciens</option>
+            <option value="id,asc">Numéro</option>
+          </select>
+        </label>
+        <button>Filtrer</button>
+        <a th:href="@{/production-steps}">Effacer</a>
+      </form>
+      <table>
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Commande</th>
+            <th>Étape</th>
+            <th>Responsable</th>
+            <th>Début prévu</th>
+            <th>Fin prévue</th>
+            <th>Commentaire</th>
+            <th>Statut</th>
+            <th>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="row : ${page.content}">
+            <td th:text="${row.id}">
+            </td>
+            <td>
+              <span th:text="${row.orderId}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.type}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.responsible}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.plannedStart}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.plannedEnd}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.comment}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.status}">
+              </span>
+            </td>
+            <td>
+              <a th:href="@{/production-steps/{id}(id=${row.id})}">Ouvrir</a>
+            </td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(page.content)}">
+            <td colspan="20">Aucun enregistrement</td>
+          </tr>
+        </tbody>
+      </table>
+      <span th:text="${page.totalElements} + &#x27; enregistrement(s)&#x27;">
+      </span>
+      <a th:if="${page.number &gt; 0}" th:href="@{/production-steps(page=${page.number - 1},q=${q},status=${status},filter=${filter},sort=${param.sort})}">Précédent</a>
+      <span th:text="${page.number + 1} + &#x27; / &#x27; + ${T(java.lang.Math).max(1,page.totalPages)}">
+      </span>
+      <a th:if="${page.number + 1 &lt; page.totalPages}" th:href="@{/production-steps(page=${page.number + 1},q=${q},status=${status},filter=${filter},sort=${param.sort})}">Suivant</a>
+    </main>
+  </body>
+</html>

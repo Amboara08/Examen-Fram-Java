@@ -1,0 +1,14 @@
+VERSION 2 - VÉRIFICATION DU 12 OCTOBRE 2026
+
+Compilation Maven : BUILD SUCCESS. Cinq JAR exécutables produits.
+Tests d'intégration : 22 réussis, aucun échec ni erreur.
+Tournois : 5 ; textile : 4 ; taxis : 4 ; parking : 5 ; livraison : 4.
+Rapports détaillés : target/surefire-reports dans chaque application.
+
+Les cinq JAR ont démarré sur les ports 8181 à 8185.
+Pour chaque projet : authentification réelle, API et cinq pages vérifiées.
+Les listes sont initialement vides. Les vérifications de démarrage utilisaient des bases H2 en mémoire.
+L'accueil, la liste et le formulaire du parking ont été vérifiés dans le navigateur.
+Les processus de vérification sont arrêtés après les contrôles.
+
+Configurations Eclipse fournies. L'interface Eclipse n'a pas été utilisée pour ces contrôles.

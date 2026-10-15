@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1>Produits</h1>
+      <a sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;,&#x27;OPERATOR&#x27;)" th:href="@{/products/new}">Ajouter</a>
+      <form method="get">
+        <label>
+          Recherche
+          <input name="q" placeholder="Rechercher" th:value="${q}">
+        </label>
+        <label>
+          Tri
+          <select name="sort">
+            <option value="id,desc">Plus récents</option>
+            <option value="id,asc">Plus anciens</option>
+            <option value="name,asc">Nom</option>
+          </select>
+        </label>
+        <button>Filtrer</button>
+        <a th:href="@{/products}">Effacer</a>
+      </form>
+      <table>
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Nom</th>
+            <th>Référence</th>
+            <th>Description</th>
+            <th>Prix unitaire</th>
+            <th>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="row : ${page.content}">
+            <td th:text="${row.id}">
+            </td>
+            <td>
+              <span th:text="${row.name}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.reference}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.description}">
+              </span>
+            </td>
+            <td>
+              <span th:text="${row.unitPrice}">
+              </span>
+            </td>
+            <td>
+              <a th:href="@{/products/{id}(id=${row.id})}">Ouvrir</a>
+            </td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(page.content)}">
+            <td colspan="20">Aucun enregistrement</td>
+          </tr>
+        </tbody>
+      </table>
+      <span th:text="${page.totalElements} + &#x27; enregistrement(s)&#x27;">
+      </span>
+      <a th:if="${page.number &gt; 0}" th:href="@{/products(page=${page.number - 1},q=${q},status=${status},filter=${filter},sort=${param.sort})}">Précédent</a>
+      <span th:text="${page.number + 1} + &#x27; / &#x27; + ${T(java.lang.Math).max(1,page.totalPages)}">
+      </span>
+      <a th:if="${page.number + 1 &lt; page.totalPages}" th:href="@{/products(page=${page.number + 1},q=${q},status=${status},filter=${filter},sort=${param.sort})}">Suivant</a>
+    </main>
+  </body>
+</html>

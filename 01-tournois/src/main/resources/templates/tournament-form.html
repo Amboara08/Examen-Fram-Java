@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1 th:text="${editing ? &#x27;Modifier&#x27; : &#x27;Ajouter&#x27;}">
+      </h1>
+      <a th:href="@{/tournaments}">Retour</a>
+      <form method="post" th:action="${editing ? path + &#x27;/&#x27; + id + &#x27;/edit&#x27; : path}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <label>
+          Nom
+          <input name="name" type="text" required th:value="${record != null ? record.name : null}">
+        </label>
+        <label>
+          Sport
+          <input name="sport" type="text" required th:value="${record != null ? record.sport : null}">
+        </label>
+        <label>
+          Description
+          <textarea rows="3" maxlength="2000" name="description" th:text="${record != null ? record.description : null}">
+          </textarea>
+        </label>
+        <label>
+          Début
+          <input name="startDate" type="date" required th:value="${record != null ? record.startDate : null}">
+        </label>
+        <label>
+          Fin
+          <input name="endDate" type="date" required th:value="${record != null ? record.endDate : null}">
+        </label>
+        <label>
+          Lieu
+          <input name="location" type="text" required th:value="${record != null ? record.location : null}">
+        </label>
+        <label>
+          Équipes maximum
+          <input name="maxTeams" type="number" required min="1" th:value="${record != null ? record.maxTeams : null}">
+        </label>
+        <label>
+          Format
+          <select name="format">
+            <option value="CHAMPIONNAT" th:selected="${record != null and record.format == &#x27;CHAMPIONNAT&#x27;}">Championnat</option>
+            <option value="ALLER_RETOUR" th:selected="${record != null and record.format == &#x27;ALLER_RETOUR&#x27;}">Aller retour</option>
+            <option value="ELIMINATION" th:selected="${record != null and record.format == &#x27;ELIMINATION&#x27;}">Elimination</option>
+          </select>
+        </label>
+        <label>
+          Critères de classement
+          <input name="rankingCriteria" type="text" required th:value="${record != null ? record.rankingCriteria : &#x27;POINTS,DIFFERENCE,BUTS,CONFRONTATION&#x27;}">
+        </label>
+        <button>Enregistrer</button>
+        <a th:href="@{/tournaments}">Annuler</a>
+      </form>
+    </main>
+  </body>
+</html>

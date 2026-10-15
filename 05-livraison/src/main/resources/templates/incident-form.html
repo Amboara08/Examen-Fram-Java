@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head th:replace="~{layout :: head}">
+  </head>
+  <body>
+    <header th:replace="~{layout :: header}">
+    </header>
+    <nav th:replace="~{layout :: nav}">
+    </nav>
+    <main>
+      <div th:replace="~{layout :: notices}">
+      </div>
+      <h1 th:text="${editing ? &#x27;Modifier&#x27; : &#x27;Ajouter&#x27;}">
+      </h1>
+      <a th:href="@{/incidents}">Retour</a>
+      <form method="post" th:action="${editing ? path + &#x27;/&#x27; + id + &#x27;/edit&#x27; : path}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <label>
+          Commande
+          <select name="orderId" required>
+            <option value="">Choisir</option>
+            <option th:each="choice : ${orderIdChoices}" th:value="${choice.id}" th:text="${choice.number}" th:selected="${record != null and record.orderId == choice.id}">
+            </option>
+          </select>
+        </label>
+        <label>
+          Type
+          <select name="type">
+            <option value="CLIENT_ABSENT" th:selected="${record != null and record.type == &#x27;CLIENT_ABSENT&#x27;}">Client absent</option>
+            <option value="ADRESSE_INCORRECTE" th:selected="${record != null and record.type == &#x27;ADRESSE_INCORRECTE&#x27;}">Adresse incorrecte</option>
+            <option value="COLIS_ENDOMMAGE" th:selected="${record != null and record.type == &#x27;COLIS_ENDOMMAGE&#x27;}">Colis endommage</option>
+            <option value="PANNE" th:selected="${record != null and record.type == &#x27;PANNE&#x27;}">Panne</option>
+            <option value="REFUS_CLIENT" th:selected="${record != null and record.type == &#x27;REFUS_CLIENT&#x27;}">Refus client</option>
+          </select>
+        </label>
+        <label>
+          Description
+          <textarea rows="3" maxlength="2000" name="description" th:text="${record != null ? record.description : null}">
+          </textarea>
+        </label>
+        <label>
+          Résolution
+          <input name="resolution" type="text" th:value="${record != null ? record.resolution : null}">
+        </label>
+        <button>Enregistrer</button>
+        <a th:href="@{/incidents}">Annuler</a>
+      </form>
+    </main>
+  </body>
+</html>
