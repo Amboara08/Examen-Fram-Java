@@ -71,5 +71,4 @@ class ApplicationTests {
         var req=new TeamRequest("HTTP "+unique(),"","Ville","Coach","","ACTIVE");var response=mvc.perform(post("/api/teams").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(req))).andExpect(status().isCreated()).andExpect(header().exists("Location")).andReturn();Long id=json.readTree(response.getResponse().getContentAsString()).get("id").asLong();mvc.perform(get("/teams/"+id+"/edit")).andExpect(status().isOk());
         mvc.perform(post("/teams/"+id+"/edit").with(csrf()).param("name",req.name()).param("city","Autre ville").param("coach","Coach").param("status","ACTIVE")).andExpect(status().is3xxRedirection());assertEquals("Autre ville",service.getTeam(id).city());
     }
-
 }
