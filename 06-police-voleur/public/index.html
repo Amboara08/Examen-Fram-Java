@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#171717" />
+    <title>Police et Voleur — Multijoueur LAN</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="page-header">
+        <div>
+          <p class="eyebrow">JEU DE STRATÉGIE · RÉSEAU LOCAL</p>
+          <h1>Police et Voleur</h1>
+          <p class="subtitle">Affrontez-vous depuis deux appareils connectés au même Wi-Fi.</p>
+        </div>
+        <div class="connection-pill" id="connectionPill">
+          <span class="connection-dot"></span>
+          <span id="connectionText">Connexion au serveur…</span>
+        </div>
+      </header>
+
+      <section class="panel lobby" id="lobby">
+        <div class="lobby-intro">
+          <div class="lobby-icon">♟</div>
+          <div>
+            <h2>Rejoindre une partie</h2>
+            <p>Le premier joueur crée une salle. Le deuxième rejoint avec le code fourni.</p>
+          </div>
+        </div>
+
+        <div class="lobby-actions">
+          <div class="action-card">
+            <span class="step-number">01</span>
+            <h3>Créer une salle</h3>
+            <p>Tu seras le voleur (pion vert).</p>
+            <button class="button button-primary" id="createRoom" type="button">Créer une salle</button>
+          </div>
+
+          <div class="action-card">
+            <span class="step-number">02</span>
+            <h3>Rejoindre une salle</h3>
+            <p>Entre le code donné par l'autre joueur.</p>
+            <label for="roomCodeInput">Code de la salle</label>
+            <input id="roomCodeInput" type="text" maxlength="5" placeholder="Ex. A7K2P" autocomplete="off" />
+            <button class="button button-secondary" id="joinRoom" type="button">Rejoindre la partie</button>
+          </div>
+        </div>
+        <p class="lobby-feedback" id="lobbyFeedback" role="status">Les deux appareils doivent être connectés au même réseau Wi-Fi.</p>
+      </section>
+
+      <section class="game-layout hidden" id="gameView">
+        <section class="panel board-panel" aria-label="Plateau de jeu">
+          <div class="board-topbar">
+            <div>
+              <span class="muted-label">CODE DE LA SALLE</span>
+              <strong class="room-code" id="roomCodeDisplay">-----</strong>
+            </div>
+            <button class="copy-button" id="copyCode" type="button" title="Copier le code">Copier</button>
+          </div>
+          <div class="board-wrap">
+            <canvas id="board" width="720" height="720" aria-label="Plateau interactif Police et Voleur"></canvas>
+          </div>
+          <div class="legend">
+            <span><i class="legend-dot thief-dot"></i>Voleur</span>
+            <span><i class="legend-dot police-dot"></i>Policiers</span>
+            <span><i class="legend-dot node-dot"></i>Intersections</span>
+          </div>
+        </section>
+
+        <aside class="panel game-sidebar">
+          <div class="role-card" id="roleCard">
+            <span class="muted-label">TON RÔLE</span>
+            <strong id="myRole">En attente</strong>
+            <span id="myRoleDescription">Connexion à la salle…</span>
+          </div>
+
+          <div class="turn-section">
+            <span class="muted-label">TOUR ACTUEL</span>
+            <div class="turn-heading" id="turnTitle">En attente du joueur 2</div>
+            <p class="status-text" id="statusText">La partie commencera lorsque les deux joueurs seront connectés.</p>
+            <div class="turn-chip">
+              <span class="turn-dot" id="turnDot"></span>
+              <span id="turnLabel">En attente</span>
+            </div>
+          </div>
+
+          <div class="player-status" id="playerStatus">
+            <div><span class="presence-dot" id="thiefPresence"></span><span>Voleur</span><strong id="thiefOnline">En attente</strong></div>
+            <div><span class="presence-dot" id="policePresence"></span><span>Policiers</span><strong id="policeOnline">En attente</strong></div>
+          </div>
+
+          <div class="stats">
+            <div class="stat"><span>Nombre de tours</span><strong id="turnCount">0</strong></div>
+            <div class="stat"><span>Déplacements du voleur</span><strong id="thiefCount">0</strong></div>
+            <div class="stat"><span>Policiers</span><strong>3</strong></div>
+          </div>
+
+          <div class="message" id="message" role="status">En attente des joueurs…</div>
+          <button class="button button-primary" id="resetGame" type="button">Nouvelle partie</button>
+          <button class="button button-quiet" id="leaveRoom" type="button">Quitter la salle</button>
+
+          <p class="help">Sélectionne ton pion, puis une intersection voisine mise en évidence. Les pions ne peuvent ni sauter ni partager une intersection.</p>
+        </aside>
+      </section>
+
+      <footer class="page-footer">Multijoueur LAN · Node.js + Socket.IO</footer>
+    </main>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/game.js"></script>
+  </body>
+</html>
