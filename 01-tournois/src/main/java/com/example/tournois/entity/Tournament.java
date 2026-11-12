@@ -1,8 +1,8 @@
 package com.example.tournois.entity;
 
 import java.time.*;
-import java.math.*;
-import java.util.*;
+// import java.math.*;
+// import java.util.*;
 import jakarta.persistence.*;
 @Entity
 @Table(name="tournament_records")

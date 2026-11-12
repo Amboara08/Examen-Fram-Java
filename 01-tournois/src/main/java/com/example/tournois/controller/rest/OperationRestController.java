@@ -1,7 +1,7 @@
 package com.example.tournois.controller.rest;
 
 import java.time.*;
-import java.math.*;
+// import java.math.*;
 import java.util.*;
 import com.example.tournois.service.ApplicationService;
 import com.example.tournois.dto.request.*;
@@ -10,7 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.*;
-import org.springframework.data.domain.PageRequest;
+// import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 @RestController @RequestMapping("/api") public class OperationRestController {
  private final ApplicationService service;
