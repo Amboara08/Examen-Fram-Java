@@ -18,6 +18,7 @@ public class Ride {
     private LocalDateTime scheduledAt;
     private Integer passengers;
     private BigDecimal fare;
+    private BigDecimal clientProposedFare;
     private Long driverId;
     private Long vehicleId;
     @Column(length=2000)
@@ -41,6 +42,8 @@ public class Ride {
     public void setPassengers(Integer value) { passengers = value; }
     public BigDecimal getFare() { return fare; }
     public void setFare(BigDecimal value) { fare = value; }
+    public BigDecimal getClientProposedFare() { return clientProposedFare; }
+    public void setClientProposedFare(BigDecimal value) { clientProposedFare = value; }
     public Long getDriverId() { return driverId; }
     public void setDriverId(Long value) { driverId = value; }
     public Long getVehicleId() { return vehicleId; }

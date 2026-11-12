@@ -2,13 +2,13 @@
 <html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:fragment="head">
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title th:text="${title}">Tournois</title>
+  <title th:text="${title}">TwentyOne Sphere</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
   <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
 <header th:fragment="header">
-  <strong><i class="fa-solid fa-trophy"></i> Tournois</strong>
+  <strong><i class="fa-solid fa-trophy"></i> TwentyOne Sphere</strong>
   <div><span sec:authentication="name"></span>
     <form method="post" th:action="@{/logout}"><button><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</button></form>
   </div>

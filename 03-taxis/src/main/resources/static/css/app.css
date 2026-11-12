@@ -44,6 +44,8 @@ header strong {
   font-size: 1.35rem;
   letter-spacing: 0.02em;
 }
+.brand-button { display: inline-flex; align-items: center; gap: 11px; padding: 10px 18px; color: #111827; background: linear-gradient(135deg,#ffe066,#f5b800); border: 2px solid rgba(255,255,255,.3); border-radius: 13px; box-shadow: 0 7px 20px rgba(245,184,0,.3); font-size: 1.28rem; font-weight: 850; letter-spacing: .02em; text-decoration: none; transition: transform .2s,box-shadow .2s; }
+.brand-button:hover { color: #111827; transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 26px rgba(245,184,0,.45); }
 
 header div { display: flex; align-items: center; gap: 14px; }
 header form { display: inline; margin: 0; }
@@ -253,6 +255,11 @@ legend { padding: 0 8px; color: #334155; font-weight: 750; }
 .empty-state { padding: 28px; color: var(--muted); text-align: center; }
 .table-action { display: inline-flex; align-items: center; gap: 6px; font-weight: 650; text-decoration: none; }
 .button-primary { color: #111827; background: linear-gradient(135deg, #ffd43b, #f5b800); }
+.add-button { color: #111827; background: linear-gradient(135deg,#ffe066,#f5b800); border: 1px solid #d69e00; font-size: 1rem; font-weight: 800; }
+.clear-button { color: #334155; background: #fff; border: 1px solid #94a3b8; box-shadow: none; }
+.view-button { padding: 8px 12px; color: #fff; background: linear-gradient(135deg,#334155,#0f172a); box-shadow: 0 4px 10px rgba(15,23,42,.18); }
+.edit-button { color: #fff; background: linear-gradient(135deg,#3b82f6,#1d4ed8); box-shadow: 0 5px 13px rgba(29,78,216,.22); }
+.delete-button { color: #fff; background: linear-gradient(135deg,#ef4444,#991b1b); border: 1px solid #7f1d1d; box-shadow: 0 6px 16px rgba(185,28,28,.28); font-weight: 800; }
 .success-button { color: #fff; background: linear-gradient(135deg, #22c55e, #15803d); box-shadow: 0 5px 13px rgba(21,128,61,.22); }
 .danger-button { color: #fff; background: linear-gradient(135deg, #ef4444, #b91c1c); box-shadow: 0 5px 13px rgba(185,28,28,.22); }
 .muted { color: var(--muted); font-size: .9rem; }
@@ -275,6 +282,23 @@ legend { padding: 0 8px; color: #334155; font-weight: 750; }
 .status-terminee { color: #166534; background: #dcfce7; }
 .status-annulee { color: #991b1b; background: #fee2e2; }
 .contact-link { display: block; margin: 3px 0; text-decoration: none; font-weight: 650; }
+.offer-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.price-offer-form { display: flex; align-items: center; gap: 7px; margin: 7px 0 0; }
+.price-offer-form input { width: 160px; margin: 0; padding: 9px 10px; }
+.price-offer-form button { white-space: nowrap; margin: 0; }
+.status-offre_chauffeur { color: #7c3aed; background: #ede9fe; }
+.stats-filter { display: flex; align-items: end; gap: 12px; flex-wrap: wrap; margin: 22px 0 28px; padding: 18px; background: #f8fafc; border: 1px solid var(--border); border-radius: 14px; }
+.stats-filter label { margin: 0; }
+.stats-filter input,.stats-filter select { width: 180px; }
+.stats-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; margin-bottom: 28px; }
+.stat-card { padding: 22px; background: linear-gradient(145deg,#fff,#fff9db); border: 1px solid #f4d35e; border-radius: 16px; box-shadow: 0 8px 24px rgba(120,85,0,.08); }
+.stat-card span { display: block; color: var(--muted); font-weight: 700; }
+.stat-card strong { display: block; margin-top: 8px; color: #111827; font-size: 1.9rem; }
+.stats-groups { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; }
+.stats-groups .portal-card { margin: 0; }
+.stat-row { display: flex; justify-content: space-between; gap: 15px; padding: 11px 0; border-bottom: 1px solid var(--border); }
+.stat-row:last-child { border-bottom: 0; }
+@media (max-width: 800px) { .stats-grid,.stats-groups { grid-template-columns: 1fr; } }
 @media (max-width: 900px) { .player-form { grid-template-columns: 1fr 1fr; } .player-form button { width: 100%; } }
 @media (max-width: 700px) { .form-grid { grid-template-columns: 1fr; } .hero-icon { display: none; } .portal-hero,.portal-card { padding: 22px 18px; } }
 @media (max-width: 560px) { .player-form { grid-template-columns: 1fr; } }

@@ -28,7 +28,7 @@ public class SecurityConfig {
  }
  @Bean @org.springframework.core.annotation.Order(2)
  SecurityFilterChain browser(HttpSecurity http) throws Exception {
-  http.authorizeHttpRequests(auth->auth.requestMatchers("/css/**","/login","/error").permitAll().requestMatchers("/client/**").hasRole("CUSTOMER").requestMatchers("/chauffeur/**").hasRole("DRIVER").requestMatchers("/settings/**").hasRole("ADMIN").anyRequest().hasAnyRole("ADMIN","MANAGER","OPERATOR","USER"));
+  http.authorizeHttpRequests(auth->auth.requestMatchers("/css/**","/login","/error").permitAll().requestMatchers("/client/**").hasRole("CUSTOMER").requestMatchers("/chauffeur/**").hasRole("DRIVER").requestMatchers("/settings/**","/statistics/**").hasRole("ADMIN").anyRequest().hasAnyRole("ADMIN","MANAGER","OPERATOR","USER"));
   http.formLogin(form->form.loginPage("/login").successHandler((req,res,a)->{var roles=a.getAuthorities();boolean c=roles.stream().anyMatch(x->x.getAuthority().equals("ROLE_CUSTOMER"));boolean d=roles.stream().anyMatch(x->x.getAuthority().equals("ROLE_DRIVER"));res.sendRedirect(c?"/client":d?"/chauffeur":"/");}).permitAll()).logout(l->l.logoutSuccessUrl("/login?logout").invalidateHttpSession(true).clearAuthentication(true).deleteCookies("JSESSIONID"));
   return http.build();
  }

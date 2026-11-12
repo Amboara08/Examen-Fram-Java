@@ -10,45 +10,10 @@
     <main>
       <div th:replace="~{layout :: notices}">
       </div>
-      <h1>Statistiques</h1>
-      <form method="get">
-        <label>
-          Du
-          <input type="date" name="from" th:value="${from}">
-        </label>
-        <label>
-          Au
-          <input type="date" name="to" th:value="${to}">
-        </label>
-        <label>
-          Période
-          <select name="period">
-            <option value="">Personnalisée</option>
-            <option value="day">Aujourd’hui</option>
-            <option value="week">Cette semaine</option>
-            <option value="month">Ce mois</option>
-          </select>
-        </label>
-        <label>
-          Chauffeur (n°)
-          <input name="actorId" type="number" min="1" th:value="${actorId}">
-        </label>
-        <button>Afficher</button>
-      </form>
-      <div th:replace="~{layout :: metrics}">
-      </div>
-      <div th:each="group : ${stats.groups}">
-        <h2 th:text="${group.key}">
-        </h2>
-        <table>
-          <tr th:each="value : ${group.value}">
-            <th th:text="${value.key}">
-            </th>
-            <td th:text="${value.value}">
-            </td>
-          </tr>
-        </table>
-      </div>
+      <div class="page-actions"><div><span class="eyebrow"><i class="fa-solid fa-chart-line"></i> Supervision</span><h1>Statistiques des taxis</h1><p>Suivez les demandes, les négociations et les revenus réellement terminés.</p></div></div>
+      <form class="stats-filter" method="get"><label>Du<input type="date" name="from" th:value="${from}"></label><label>Au<input type="date" name="to" th:value="${to}"></label><label>Période<select name="period"><option value="">Personnalisée</option><option value="day">Aujourd’hui</option><option value="week">Cette semaine</option><option value="month">Ce mois</option></select></label><button class="button-primary"><i class="fa-solid fa-filter"></i> Appliquer</button><a class="button button-secondary" th:href="@{/statistics}"><i class="fa-solid fa-rotate-left"></i> Réinitialiser</a></form>
+      <section class="stats-grid"><article class="stat-card" th:each="metric : ${stats.metrics}"><span th:text="${metric.key}"></span><strong th:text="${metric.value}"></strong></article></section>
+      <section class="stats-groups"><article class="portal-card" th:each="group : ${stats.groups}"><h2 th:text="${group.key}"></h2><div class="stat-row" th:each="value : ${group.value}"><span th:text="${value.key}"></span><strong th:text="${value.value}"></strong></div></article></section>
     </main>
   </body>
 </html>

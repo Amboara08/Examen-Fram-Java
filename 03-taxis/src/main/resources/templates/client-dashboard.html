@@ -15,7 +15,7 @@
     <form class="form-grid" method="post" th:action="@{/client/rides}">
       <label>Adresse de départ<input name="departure" required maxlength="2000" placeholder="Votre adresse de départ"></label>
       <label>Destination<input name="destination" required maxlength="2000" placeholder="Votre destination"></label>
-      <label>Distance estimée (km)<input name="distance" type="number" min="0.1" step="0.1" required></label>
+      <label>Votre prix proposé (Ariary)<input name="proposedPrice" type="number" min="100" step="100" required placeholder="Exemple : 15000"></label>
       <label>Date et heure<input name="scheduledAt" type="datetime-local" required></label>
       <label>Nombre de passagers<input name="passengers" type="number" min="1" max="8" value="1" required></label>
       <div class="form-action"><button class="button-primary" type="submit"><i class="fa-solid fa-paper-plane"></i> Envoyer la demande</button></div>
@@ -27,10 +27,10 @@
     <div class="table-wrap"><table><thead><tr><th>Trajet</th><th>Date</th><th>Passagers</th><th>Prix</th><th>Statut</th><th>Chauffeur</th><th>Action</th></tr></thead>
       <tbody><tr th:each="ride : ${rides}">
         <td><strong th:text="${ride.departure}"></strong><br><span class="muted"><i class="fa-solid fa-arrow-right"></i> <span th:text="${ride.destination}"></span></span></td>
-        <td th:text="${#temporals.format(ride.scheduledAt,'dd/MM/yyyy HH:mm')}"></td><td th:text="${ride.passengers}"></td><td th:text="${ride.fare + ' €'}"></td>
+        <td th:text="${#temporals.format(ride.scheduledAt,'dd/MM/yyyy HH:mm')}"></td><td th:text="${ride.passengers}"></td><td><strong th:text="${ride.fare + ' Ar'}"></strong><br><span class="muted" th:text="${ride.status == 'OFFRE_CHAUFFEUR' ? 'Prix proposé par le chauffeur' : 'Prix proposé'}"></span></td>
         <td><span class="status-badge" th:classappend="${' status-' + #strings.toLowerCase(ride.status)}" th:text="${#strings.replace(ride.status,'_',' ')}"></span></td>
         <td><th:block th:each="d : ${drivers}" th:if="${ride.driverId != null and d.id == ride.driverId}"><strong th:text="${d.name}"></strong><br><a th:href="${'tel:' + d.phone}"><i class="fa-solid fa-phone"></i> Appeler</a></th:block><span th:if="${ride.driverId == null}">En attente</span></td>
-        <td><form class="inline-form" th:if="${ride.status == 'EN_ATTENTE'}" method="post" th:action="@{/client/rides/{id}/cancel(id=${ride.id})}"><button class="danger-button" type="submit"><i class="fa-solid fa-xmark"></i> Annuler</button></form></td>
+        <td><div class="offer-actions" th:if="${ride.status == 'OFFRE_CHAUFFEUR'}"><form class="inline-form" method="post" th:action="@{/client/rides/{id}/offer/accept(id=${ride.id})}"><button class="success-button" type="submit"><i class="fa-solid fa-check"></i> Accepter</button></form><form class="inline-form" method="post" th:action="@{/client/rides/{id}/offer/refuse(id=${ride.id})}"><button class="danger-button" type="submit"><i class="fa-solid fa-xmark"></i> Refuser</button></form></div><form class="inline-form" th:if="${ride.status == 'EN_ATTENTE'}" method="post" th:action="@{/client/rides/{id}/cancel(id=${ride.id})}"><button class="danger-button" type="submit"><i class="fa-solid fa-ban"></i> Annuler</button></form></td>
       </tr><tr th:if="${#lists.isEmpty(rides)}"><td colspan="7" class="empty-state"><i class="fa-solid fa-road"></i> Aucune demande pour le moment</td></tr></tbody>
     </table></div>
   </section>

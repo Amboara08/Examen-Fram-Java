@@ -25,12 +25,12 @@
         </tr>
         <tr>
           <th>Domicile</th>
-          <td th:text="${record.homeTeamId != null ? record.homeTeamId : &#x27;—&#x27;}">
+          <td th:text="${homeTeam != null ? homeTeam.name : &#x27;—&#x27;}">
           </td>
         </tr>
         <tr>
           <th>Extérieur</th>
-          <td th:text="${record.awayTeamId != null ? record.awayTeamId : &#x27;—&#x27;}">
+          <td th:text="${awayTeam != null ? awayTeam.name : &#x27;—&#x27;}">
           </td>
         </tr>
         <tr>
@@ -70,22 +70,16 @@
         </tr>
         <tr>
           <th>Vainqueur</th>
-          <td th:text="${record.winnerId != null ? record.winnerId : &#x27;—&#x27;}">
+          <td th:text="${record.winnerId == null and record.status == 'TERMINE' ? 'Match nul' : record.winnerId == record.homeTeamId ? homeTeam.name : record.winnerId == record.awayTeamId ? awayTeam.name : '—'}">
           </td>
         </tr>
       </table>
       <div sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;,&#x27;OPERATOR&#x27;)">
-        <form th:if="${record.homeTeamId != null and record.awayTeamId != null and tournament.status == &#x27;EN_COURS&#x27;}" method="post" th:action="@{/matches/{id}/actions/result(id=${record.id})}">
-          <h3>Enregistrer le résultat</h3>
-          <label>
-            Score domicile
-            <input name="homeScore" type="number" min="0" required>
-          </label>
-          <label>
-            Score extérieur
-            <input name="awayScore" type="number" min="0" required>
-          </label>
-          <button>Enregistrer le résultat</button>
+        <form class="result-form" th:if="${record.homeTeamId != null and record.awayTeamId != null and tournament.status == &#x27;EN_COURS&#x27;}" method="post" th:action="@{/matches/{id}/actions/result(id=${record.id})}">
+          <div class="section-title"><div><h3><i class="fa-solid fa-square-poll-vertical"></i> Enregistrer le résultat</h3><p>Les points du classement seront calculés selon les paramètres du tournoi.</p></div></div>
+          <div class="score-grid"><label><span th:text="${homeTeam.name}"></span><input name="homeScore" type="number" min="0" required th:value="${record.homeScore}"></label><span class="score-separator">–</span><label><span th:text="${awayTeam.name}"></span><input name="awayScore" type="number" min="0" required th:value="${record.awayScore}"></label></div>
+          <label>Vainqueur<select name="teamId"><option value="">Match nul</option><option th:value="${record.homeTeamId}" th:text="${homeTeam.name}" th:selected="${record.winnerId == record.homeTeamId}"></option><option th:value="${record.awayTeamId}" th:text="${awayTeam.name}" th:selected="${record.winnerId == record.awayTeamId}"></option></select></label>
+          <button><i class="fa-solid fa-floppy-disk"></i> Enregistrer le score</button>
         </form>
       </div>
       <h2>Historique</h2>

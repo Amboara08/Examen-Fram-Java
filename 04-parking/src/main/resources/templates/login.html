@@ -6,7 +6,7 @@
   <link rel="stylesheet" th:href="@{/css/app.css}"></head>
 <body><main class="login">
   <div class="login-icon"><i class="fa-solid fa-square-parking"></i></div>
-  <h1>ParkFlow</h1>
+  <h1>Parking21</h1>
   <p class="error" th:if="${param.error}">Identifiants incorrects</p>
   <p th:if="${param.logout}">Déconnexion effectuée</p>
   <form method="post" th:action="@{/login}">

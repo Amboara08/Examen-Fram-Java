@@ -27,7 +27,7 @@ public class MatchWebController {
     }
     @GetMapping("/new") @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')") public String form(Model m) { prepare(m); m.addAttribute("editing",false); return "match-form"; }
     @GetMapping("/{id}/edit") @PreAuthorize("hasAnyRole('ADMIN','MANAGER')") public String edit(@PathVariable Long id,Model m) { prepare(m); m.addAttribute("editing",true); m.addAttribute("id",id); m.addAttribute("record",service.getMatch(id)); return "match-form"; }
-    @GetMapping("/{id}") public String detail(@PathVariable Long id,Model m) { prepare(m); m.addAttribute("record",service.getMatch(id)); m.addAttribute("audit",service.history("Match",id)); service.detail("Match",id,m); return "match-detail"; }
+    @GetMapping("/{id}") public String detail(@PathVariable Long id,Model m) { prepare(m); var match=service.getMatch(id); m.addAttribute("record",match); if(match.homeTeamId()!=null)m.addAttribute("homeTeam",service.getTeam(match.homeTeamId())); if(match.awayTeamId()!=null)m.addAttribute("awayTeam",service.getTeam(match.awayTeamId())); m.addAttribute("audit",service.history("Match",id)); service.detail("Match",id,m); return "match-detail"; }
     @PostMapping @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')") public String save(@Valid @ModelAttribute("record") MatchRequest r,BindingResult errors,Model m,RedirectAttributes flash) {
         if(errors.hasErrors()) { prepare(m); m.addAttribute("editing",false); m.addAttribute("error",errors.getAllErrors().get(0).getDefaultMessage()); return "match-form"; }
         try { var saved=service.createMatch(r); flash.addFlashAttribute("success","Enregistrement créé"); return "redirect:/matches/"+saved.id(); }

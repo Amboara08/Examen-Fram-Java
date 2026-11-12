@@ -8,7 +8,9 @@
 </head>
 <body>
 <header th:fragment="header">
-  <strong><i class="fa-solid fa-taxi"></i> Taxis</strong>
+  <a class="brand-button" sec:authorize="hasAnyRole('ADMIN','MANAGER','OPERATOR','USER')" th:href="@{/}"><i class="fa-solid fa-taxi"></i><span>Taxis</span></a>
+  <a class="brand-button" sec:authorize="hasRole('CUSTOMER')" th:href="@{/client}"><i class="fa-solid fa-taxi"></i><span>Taxis</span></a>
+  <a class="brand-button" sec:authorize="hasRole('DRIVER')" th:href="@{/chauffeur}"><i class="fa-solid fa-taxi"></i><span>Taxis</span></a>
   <div><span sec:authentication="name"></span>
     <form method="post" th:action="@{/logout}"><button><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</button></form>
   </div>
@@ -17,6 +19,7 @@
   <a th:href="@{/}"><i class="fa-solid fa-house"></i> Accueil</a>
   <a th:href="@{/clients}"><i class="fa-solid fa-users"></i> Clients</a>
   <a th:href="@{/drivers}"><i class="fa-solid fa-id-card"></i> Chauffeurs</a>
+  <a sec:authorize="hasRole('ADMIN')" th:href="@{/statistics}"><i class="fa-solid fa-chart-column"></i> Statistiques</a>
 </nav>
 
 <div th:fragment="notices">

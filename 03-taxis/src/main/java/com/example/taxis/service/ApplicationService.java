@@ -32,6 +32,9 @@ public interface ApplicationService {
     DriverResponse updateDriverWithVehicle(Long id,@Valid DriverRequest driver,String password,@Valid VehicleRequest vehicle);
     VehicleResponse getVehicleByDriver(Long driverId);
     RideResponse acceptRide(Long rideId,Long driverId);
+    RideResponse createRideWithPrice(@Valid RideRequest request,BigDecimal proposedPrice);
+    RideResponse proposeRidePrice(Long rideId,Long driverId,BigDecimal proposedPrice);
+    RideResponse respondToDriverPrice(Long rideId,Long clientId,boolean accepted);
     PageResponse<RideResponse> listRide(String q,String status,String filter,Pageable pageable);
     RideResponse getRide(Long id);
     RideResponse createRide(@Valid RideRequest request);

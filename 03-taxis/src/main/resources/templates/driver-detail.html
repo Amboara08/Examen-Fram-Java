@@ -15,8 +15,8 @@
         <span th:text="&#x27;#&#x27; + ${record.id}">
         </span>
       </h1>
-      <a sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" th:href="@{/drivers/{id}/edit(id=${record.id})}">Modifier</a>
-      <a th:href="@{/drivers}">Retour</a>
+      <a class="button edit-button" sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" th:href="@{/drivers/{id}/edit(id=${record.id})}"><i class="fa-solid fa-pen"></i> Modifier</a>
+      <a class="button button-secondary" th:href="@{/drivers}"><i class="fa-solid fa-arrow-left"></i> Retour</a>
       <table>
         <tr>
           <th>Nom</th>
@@ -121,7 +121,7 @@
         </li>
       </ul>
       <form sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;)" method="post" th:action="@{/drivers/{id}/delete(id=${record.id})}" onsubmit="return confirm(&#x27;Supprimer cet enregistrement ?&#x27;)">
-        <button>Supprimer</button>
+        <button class="delete-button"><i class="fa-solid fa-trash-can"></i> Supprimer le chauffeur</button>
       </form>
     </main>
   </body>

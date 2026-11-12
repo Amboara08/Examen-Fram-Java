@@ -10,8 +10,7 @@
     <main>
       <div th:replace="~{layout :: notices}">
       </div>
-      <h1>Clients</h1>
-      <a sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;,&#x27;OPERATOR&#x27;)" th:href="@{/clients/new}">Ajouter</a>
+      <div class="page-actions"><h1>Clients</h1><a class="button add-button" sec:authorize="hasAnyRole(&#x27;ADMIN&#x27;,&#x27;MANAGER&#x27;,&#x27;OPERATOR&#x27;)" th:href="@{/clients/new}"><i class="fa-solid fa-user-plus"></i> Ajouter un client</a></div>
       <form method="get">
         <label>
           Tri
@@ -21,8 +20,8 @@
             <option value="name,asc">Nom</option>
           </select>
         </label>
-        <button>Filtrer</button>
-        <a th:href="@{/clients}">Effacer</a>
+        <button class="button-primary"><i class="fa-solid fa-filter"></i> Filtrer</button>
+        <a class="button clear-button" th:href="@{/clients}"><i class="fa-solid fa-eraser"></i> Effacer les filtres</a>
       </form>
       <table>
         <thead>
@@ -57,7 +56,7 @@
               </span>
             </td>
             <td>
-              <a th:href="@{/clients/{id}(id=${row.id})}">Ouvrir</a>
+              <a class="button view-button" th:href="@{/clients/{id}(id=${row.id})}"><i class="fa-solid fa-eye"></i> Voir</a>
             </td>
           </tr>
           <tr th:if="${#lists.isEmpty(page.content)}">

@@ -263,7 +263,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         var t=require(tournamentRepository,m.getTournamentId());check("EN_COURS".equals(t.getStatus()),"Démarrez le tournoi avant de saisir les résultats");
         check(m.getHomeTeamId()!=null && m.getAwayTeamId()!=null,"Les équipes ne sont pas encore qualifiées");check(r.homeScore()!=null && r.awayScore()!=null,"Les deux scores sont obligatoires");
         if("ELIMINATION".equals(t.getFormat())){check(!r.homeScore().equals(r.awayScore()),"Un match éliminatoire doit avoir un vainqueur");check(matches(t.getId()).stream().noneMatch(v->v.getRoundNumber()>m.getRoundNumber() && v.getHomeScore()!=null),"Un tour suivant possède déjà un résultat");}
-        m.setHomeScore(r.homeScore());m.setAwayScore(r.awayScore());m.setStatus("TERMINE");m.setWinnerId(r.homeScore().equals(r.awayScore())?null:r.homeScore()>r.awayScore()?m.getHomeTeamId():m.getAwayTeamId());
+        Long calculatedWinner=r.homeScore().equals(r.awayScore())?null:r.homeScore()>r.awayScore()?m.getHomeTeamId():m.getAwayTeamId();check(r.teamId()==null||Objects.equals(r.teamId(),calculatedWinner),calculatedWinner==null?"Pour ce score, sélectionnez Match nul":"Le vainqueur sélectionné ne correspond pas au score");
+        m.setHomeScore(r.homeScore());m.setAwayScore(r.awayScore());m.setStatus("TERMINE");m.setWinnerId(calculatedWinner);
         if("ELIMINATION".equals(t.getFormat()))propagate(t);audit("Match",m.getId(),"Résultat : "+r.homeScore()+" - "+r.awayScore());audit("Tournament",t.getId(),"Résultat du match "+m.getId());
     }
     @Override public Object perform(String resource,Long id,String operation,ActionRequest r){
