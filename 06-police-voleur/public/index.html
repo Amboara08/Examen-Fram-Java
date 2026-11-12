@@ -26,7 +26,7 @@
           <div class="lobby-icon">♟</div>
           <div>
             <h2>Rejoindre une partie</h2>
-            <p>Le premier joueur crée une salle. Le deuxième rejoint avec le code fourni.</p>
+            <p>Crée une salle LAN pour jouer à deux, ou affronte l’IA Minimax.</p>
           </div>
         </div>
 
@@ -35,7 +35,8 @@
             <span class="step-number">01</span>
             <h3>Créer une salle</h3>
             <p>Tu seras le voleur (pion vert).</p>
-            <button class="button button-primary" id="createRoom" type="button">Créer une salle</button>
+            <button class="button button-primary" id="createRoom" type="button">Créer une salle LAN</button>
+            <button class="button button-secondary" id="createAiRoom" type="button">Jouer contre l’IA (Minimax)</button>
           </div>
 
           <div class="action-card">
@@ -101,7 +102,7 @@
           <button class="button button-primary" id="resetGame" type="button">Nouvelle partie</button>
           <button class="button button-quiet" id="leaveRoom" type="button">Quitter la salle</button>
 
-          <p class="help">Sélectionne ton pion, puis une intersection voisine mise en évidence. Les pions ne peuvent ni sauter ni partager une intersection.</p>
+          <p class="help">Objectif : le voleur vert gagne dès qu'il atteint le sommet central, marqué en doré. Les policiers bleus gagnent s'ils bloquent tous ses déplacements. Les quatre pions sont placés aléatoirement au début de chaque partie. Sélectionne ton pion, puis une intersection voisine mise en évidence. Les pions ne peuvent ni sauter ni partager une intersection.</p>
         </aside>
       </section>
 

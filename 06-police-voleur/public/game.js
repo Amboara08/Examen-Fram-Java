@@ -105,6 +105,15 @@ class Board {
     }
 
     for (const node of this.nodes) {
+      // Le sommet central est l'objectif du voleur : on le distingue en doré.
+      if (node.kind === 'center') {
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 26, 0, Math.PI * 2);
+        ctx.strokeStyle = '#f2c14e';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      }
+
       ctx.beginPath();
       ctx.arc(node.x, node.y, node.kind === 'outer' ? 5.8 : 5.5, 0, Math.PI * 2);
       ctx.fillStyle = '#e45b61';
@@ -160,6 +169,7 @@ const elements = {
   connectionText: document.getElementById('connectionText'),
   lobbyFeedback: document.getElementById('lobbyFeedback'),
   createRoom: document.getElementById('createRoom'),
+  createAiRoom: document.getElementById('createAiRoom'),
   joinRoom: document.getElementById('joinRoom'),
   roomCodeInput: document.getElementById('roomCodeInput'),
   roomCodeDisplay: document.getElementById('roomCodeDisplay'),
@@ -244,7 +254,7 @@ function render() {
   elements.roomCodeDisplay.textContent = roomCode;
   elements.myRole.textContent = roleName;
   elements.myRoleDescription.textContent = myRole === 'thief'
-    ? 'Tu contrôles le pion vert.'
+    ? (gameState.playersOnline?.police && !gameState.playersOnline?.thief ? 'Tu contrôles le pion vert.' : 'Tu contrôles le pion vert.')
     : 'Tu contrôles les trois pions bleus.';
 
   if (gameState.gameOver) {
@@ -353,16 +363,19 @@ function requestRoom(action, payload = {}) {
     return;
   }
   elements.createRoom.disabled = true;
+  elements.createAiRoom.disabled = true;
   elements.joinRoom.disabled = true;
   elements.lobbyFeedback.textContent = 'Connexion à la salle…';
   socket.emit(action, payload, response => {
     elements.createRoom.disabled = false;
+    elements.createAiRoom.disabled = false;
     elements.joinRoom.disabled = false;
     enterRoom(response);
   });
 }
 
 elements.createRoom.addEventListener('click', () => requestRoom('createRoom'));
+elements.createAiRoom.addEventListener('click', () => requestRoom('createAiRoom')); 
 elements.joinRoom.addEventListener('click', () => {
   const code = elements.roomCodeInput.value.trim().toUpperCase();
   if (!code) {
