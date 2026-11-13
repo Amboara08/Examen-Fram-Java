@@ -9,7 +9,14 @@ police-voleur-lan/
 ├── public/
 │   ├── index.html
 │   ├── style.css
-│   └── game.js
+│   ├── game.js
+│   ├── pwa.js
+│   ├── manifest.webmanifest
+│   ├── sw.js
+│   └── icons/
+│       ├── icon-192.png
+│       ├── icon-512.png
+│       └── icon-maskable-512.png
 ├── package.json
 ├── server.js
 └── README.md
@@ -23,6 +30,19 @@ police-voleur-lan/
 4. Démarre le serveur : `npm start`.
 5. Ouvre `http://localhost:3000` sur l'ordinateur serveur.
 6. Pour le LAN, ouvre sur les autres appareils l'adresse IP locale affichée par le serveur (même Wi-Fi/LAN).
+
+## PWA (installation sur l'écran d'accueil)
+
+- Le projet inclut un manifeste PWA, des icônes, un Service Worker et un bouton d'installation.
+- Sur `localhost`, la PWA peut être installée depuis un navigateur compatible (Chrome/Edge).
+- Pour installer l'application sur un autre appareil du réseau local, l'adresse doit être servie en **HTTPS**. Une adresse LAN en `http://192.168.x.x:3000` ne permet généralement pas au navigateur d'activer le Service Worker, car ce n'est pas un contexte sécurisé.
+- Une fois le site ouvert en HTTPS, utilise le bouton **Installer l’application** ou le menu du navigateur.
+- Sur iPhone/iPad, utilise Partager → « Sur l’écran d’accueil ».
+- Le Service Worker met en cache l'interface et les fichiers statiques. Une connexion au serveur reste nécessaire pour jouer en LAN ou contre l'IA.
+
+## Fin de partie
+
+Lorsqu'un joueur gagne, une fenêtre de fin de partie s'affiche avec le résultat, le vainqueur et la raison de la victoire. Le bouton « Rejouer » permet de relancer une partie.
 
 ## Modes de jeu
 

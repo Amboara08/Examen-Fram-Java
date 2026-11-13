@@ -4,6 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#171717" />
+    <meta name="description" content="Jouez à Police et Voleur en réseau local ou contre une intelligence artificielle Minimax." />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Police & Voleur" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icons/icon-192.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
     <title>Police et Voleur — Multijoueur LAN</title>
     <link rel="stylesheet" href="/style.css" />
   </head>
@@ -13,14 +23,16 @@
         <div>
           <p class="eyebrow">JEU DE STRATÉGIE · RÉSEAU LOCAL</p>
           <h1>Police et Voleur</h1>
-          <p class="subtitle">
-            Jouez en réseau local ou affrontez une IA Minimax dans les deux
-            rôles.
-          </p>
+          <p class="subtitle">Jouez en réseau local ou affrontez une IA Minimax dans les deux rôles.</p>
         </div>
-        <div class="connection-pill" id="connectionPill">
-          <span class="connection-dot"></span>
-          <span id="connectionText">Connexion au serveur…</span>
+        <div class="header-actions">
+          <button class="install-button" id="installApp" type="button" aria-label="Installer Police et Voleur">
+            <span aria-hidden="true">⬇</span> Installer l’application
+          </button>
+          <div class="connection-pill" id="connectionPill">
+            <span class="connection-dot"></span>
+            <span id="connectionText">Connexion au serveur…</span>
+          </div>
         </div>
       </header>
 
@@ -29,10 +41,7 @@
           <div class="lobby-icon">♟</div>
           <div>
             <h2>Rejoindre une partie</h2>
-            <p>
-              Crée une salle LAN ou choisis ton camp contre l’intelligence
-              artificielle.
-            </p>
+            <p>Crée une salle LAN ou choisis ton camp contre l’intelligence artificielle.</p>
           </div>
         </div>
 
@@ -41,23 +50,9 @@
             <span class="step-number">01</span>
             <h3>Créer une salle</h3>
             <p>Tu seras le voleur (pion vert).</p>
-            <button class="button button-primary" id="createRoom" type="button">
-              Créer une salle LAN
-            </button>
-            <button
-              class="button button-secondary"
-              id="createAiRoom"
-              type="button"
-            >
-              Jouer le voleur contre l’IA policière
-            </button>
-            <button
-              class="button button-secondary"
-              id="createAiThiefRoom"
-              type="button"
-            >
-              Jouer les policiers contre l’IA voleuse
-            </button>
+            <button class="button button-primary" id="createRoom" type="button">Créer une salle LAN</button>
+            <button class="button button-secondary" id="createAiRoom" type="button">Jouer le voleur contre l’IA policière</button>
+            <button class="button button-secondary" id="createAiThiefRoom" type="button">Jouer les policiers contre l’IA voleuse</button>
           </div>
 
           <div class="action-card">
@@ -65,21 +60,11 @@
             <h3>Rejoindre une salle</h3>
             <p>Entre le code donné par l'autre joueur.</p>
             <label for="roomCodeInput">Code de la salle</label>
-            <input
-              id="roomCodeInput"
-              type="text"
-              maxlength="5"
-              placeholder="Ex. A7K2P"
-              autocomplete="off"
-            />
-            <button class="button button-secondary" id="joinRoom" type="button">
-              Rejoindre la partie
-            </button>
+            <input id="roomCodeInput" type="text" maxlength="5" placeholder="Ex. A7K2P" autocomplete="off" />
+            <button class="button button-secondary" id="joinRoom" type="button">Rejoindre la partie</button>
           </div>
         </div>
-        <p class="lobby-feedback" id="lobbyFeedback" role="status">
-          Les deux appareils doivent être connectés au même réseau Wi-Fi.
-        </p>
+        <p class="lobby-feedback" id="lobbyFeedback" role="status">Les deux appareils doivent être connectés au même réseau Wi-Fi.</p>
       </section>
 
       <section class="game-layout hidden" id="gameView">
@@ -89,22 +74,10 @@
               <span class="muted-label">CODE DE LA SALLE</span>
               <strong class="room-code" id="roomCodeDisplay">-----</strong>
             </div>
-            <button
-              class="copy-button"
-              id="copyCode"
-              type="button"
-              title="Copier le code"
-            >
-              Copier
-            </button>
+            <button class="copy-button" id="copyCode" type="button" title="Copier le code">Copier</button>
           </div>
           <div class="board-wrap">
-            <canvas
-              id="board"
-              width="720"
-              height="720"
-              aria-label="Plateau interactif Police et Voleur"
-            ></canvas>
+            <canvas id="board" width="720" height="720" aria-label="Plateau interactif Police et Voleur"></canvas>
           </div>
           <div class="legend">
             <span><i class="legend-dot thief-dot"></i>Voleur</span>
@@ -122,12 +95,8 @@
 
           <div class="turn-section">
             <span class="muted-label">TOUR ACTUEL</span>
-            <div class="turn-heading" id="turnTitle">
-              En attente du joueur 2
-            </div>
-            <p class="status-text" id="statusText">
-              La partie commencera lorsque les deux joueurs seront connectés.
-            </p>
+            <div class="turn-heading" id="turnTitle">En attente du joueur 2</div>
+            <p class="status-text" id="statusText">La partie commencera lorsque les deux joueurs seront connectés.</p>
             <div class="turn-chip">
               <span class="turn-dot" id="turnDot"></span>
               <span id="turnLabel">En attente</span>
@@ -135,55 +104,40 @@
           </div>
 
           <div class="player-status" id="playerStatus">
-            <div>
-              <span class="presence-dot" id="thiefPresence"></span
-              ><span>Voleur</span><strong id="thiefOnline">En attente</strong>
-            </div>
-            <div>
-              <span class="presence-dot" id="policePresence"></span
-              ><span>Policiers</span
-              ><strong id="policeOnline">En attente</strong>
-            </div>
+            <div><span class="presence-dot" id="thiefPresence"></span><span>Voleur</span><strong id="thiefOnline">En attente</strong></div>
+            <div><span class="presence-dot" id="policePresence"></span><span>Policiers</span><strong id="policeOnline">En attente</strong></div>
           </div>
 
           <div class="stats">
-            <div class="stat">
-              <span>Nombre de tours</span><strong id="turnCount">0</strong>
-            </div>
-            <div class="stat">
-              <span>Déplacements du voleur</span
-              ><strong id="thiefCount">0</strong>
-            </div>
+            <div class="stat"><span>Nombre de tours</span><strong id="turnCount">0</strong></div>
+            <div class="stat"><span>Déplacements du voleur</span><strong id="thiefCount">0</strong></div>
             <div class="stat"><span>Policiers</span><strong>3</strong></div>
           </div>
 
-          <div class="message" id="message" role="status">
-            En attente des joueurs…
-          </div>
-          <button class="button button-primary" id="resetGame" type="button">
-            Nouvelle partie
-          </button>
-          <button class="button button-quiet" id="leaveRoom" type="button">
-            Quitter la salle
-          </button>
+          <div class="message" id="message" role="status">En attente des joueurs…</div>
+          <button class="button button-primary" id="resetGame" type="button">Nouvelle partie</button>
+          <button class="button button-quiet" id="leaveRoom" type="button">Quitter la salle</button>
 
-          <p class="help">
-            Objectif : le voleur vert gagne dès qu'il atteint le sommet central,
-            marqué en doré. Les policiers bleus gagnent s'ils bloquent tous ses
-            déplacements. Les quatre pions sont placés aléatoirement au début de
-            chaque partie. Sélectionne ton pion, puis une intersection voisine
-            mise en évidence. Les pions ne peuvent ni sauter ni partager une
-            intersection.
-          </p>
+          <p class="help">Objectif : le voleur vert gagne dès qu'il atteint le sommet central, marqué en doré. Les policiers bleus gagnent s'ils bloquent tous ses déplacements. Les quatre pions sont placés aléatoirement au début de chaque partie. Sélectionne ton pion, puis une intersection voisine mise en évidence. Les pions ne peuvent ni sauter ni partager une intersection.</p>
         </aside>
       </section>
 
-      <footer class="page-footer">
-        Multijoueur LAN · IA Minimax + Alpha-Bêta · Node.js + Socket.IO
-      </footer>
+      <footer class="page-footer">Multijoueur LAN · IA Minimax + Alpha-Bêta · Node.js + Socket.IO</footer>
     </main>
+
+    <div class="game-over-overlay hidden" id="gameOverOverlay" role="alertdialog" aria-modal="true" aria-labelledby="gameOverTitle" aria-describedby="gameOverReason">
+      <section class="game-over-card">
+        <div class="game-over-icon" id="gameOverIcon" aria-hidden="true"><i class="fas fa-trophy"></i></div>
+        <p class="game-over-eyebrow">FIN DE LA PARTIE</p>
+        <h2 id="gameOverTitle">Partie terminée</h2>
+        <p class="game-over-winner" id="gameOverWinner"></p>
+        <p class="game-over-reason" id="gameOverReason"></p>
+        <button class="button button-primary" id="gameOverRestart" type="button">Rejouer</button>
+      </section>
+    </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/game.js"></script>
+    <script src="/pwa.js"></script>
   </body>
 </html>

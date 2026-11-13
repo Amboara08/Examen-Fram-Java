@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const socket = io();
 
@@ -10,7 +10,7 @@ class Board {
     this.buildGraph();
   }
 
-  addNode(x, y, kind = "outer") {
+  addNode(x, y, kind = 'outer') {
     const id = this.nodes.length;
     this.nodes.push({ id, x, y, kind });
     this.adj[id] = [];
@@ -32,29 +32,27 @@ class Board {
 
     for (let i = 0; i < 12; i++) {
       const angle = ((-90 + i * 30) * Math.PI) / 180;
-      outer.push(
-        this.addNode(
-          center + outerRadius * Math.cos(angle),
-          center + outerRadius * Math.sin(angle),
-          "outer",
-        ),
-      );
+      outer.push(this.addNode(
+        center + outerRadius * Math.cos(angle),
+        center + outerRadius * Math.sin(angle),
+        'outer'
+      ));
     }
     for (let i = 0; i < 12; i++) this.link(outer[i], outer[(i + 1) % 12]);
 
     const mid = {
-      top: this.addNode(center, center - outerRadius * 0.55, "junction"),
-      right: this.addNode(center + outerRadius * 0.55, center, "junction"),
-      bottom: this.addNode(center, center + outerRadius * 0.55, "junction"),
-      left: this.addNode(center - outerRadius * 0.55, center, "junction"),
+      top: this.addNode(center, center - outerRadius * 0.55, 'junction'),
+      right: this.addNode(center + outerRadius * 0.55, center, 'junction'),
+      bottom: this.addNode(center, center + outerRadius * 0.55, 'junction'),
+      left: this.addNode(center - outerRadius * 0.55, center, 'junction')
     };
     const inner = {
-      top: this.addNode(center, center - innerRadius, "inner"),
-      right: this.addNode(center + innerRadius, center, "inner"),
-      bottom: this.addNode(center, center + innerRadius, "inner"),
-      left: this.addNode(center - innerRadius, center, "inner"),
+      top: this.addNode(center, center - innerRadius, 'inner'),
+      right: this.addNode(center + innerRadius, center, 'inner'),
+      bottom: this.addNode(center, center + innerRadius, 'inner'),
+      left: this.addNode(center - innerRadius, center, 'inner')
     };
-    const middle = this.addNode(center, center, "center");
+    const middle = this.addNode(center, center, 'center');
 
     this.link(inner.top, inner.right);
     this.link(inner.right, inner.bottom);
@@ -92,10 +90,10 @@ class Board {
   draw(ctx, pieces, selected, legal) {
     ctx.clearRect(0, 0, 720, 720);
     ctx.save();
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
 
-    ctx.strokeStyle = "#c7cbd1";
+    ctx.strokeStyle = '#c7cbd1';
     ctx.lineWidth = 2.2;
     for (const [a, b] of this.edges) {
       const p = this.nodes[a];
@@ -108,23 +106,17 @@ class Board {
 
     for (const node of this.nodes) {
       // Le sommet central est l'objectif du voleur : on le distingue en doré.
-      if (node.kind === "center") {
+      if (node.kind === 'center') {
         ctx.beginPath();
         ctx.arc(node.x, node.y, 26, 0, Math.PI * 2);
-        ctx.strokeStyle = "#f2c14e";
+        ctx.strokeStyle = '#f2c14e';
         ctx.lineWidth = 3;
         ctx.stroke();
       }
 
       ctx.beginPath();
-      ctx.arc(
-        node.x,
-        node.y,
-        node.kind === "outer" ? 5.8 : 5.5,
-        0,
-        Math.PI * 2,
-      );
-      ctx.fillStyle = "#e45b61";
+      ctx.arc(node.x, node.y, node.kind === 'outer' ? 5.8 : 5.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#e45b61';
       ctx.fill();
     }
 
@@ -132,9 +124,9 @@ class Board {
       const node = this.nodes[id];
       ctx.beginPath();
       ctx.arc(node.x, node.y, 14, 0, Math.PI * 2);
-      ctx.fillStyle = "#4caf5040";
+      ctx.fillStyle = '#4caf5040';
       ctx.fill();
-      ctx.strokeStyle = "#83df88";
+      ctx.strokeStyle = '#83df88';
       ctx.lineWidth = 2.5;
       ctx.stroke();
     }
@@ -143,24 +135,24 @@ class Board {
       const node = this.nodes[selected];
       ctx.beginPath();
       ctx.arc(node.x, node.y, 24, 0, Math.PI * 2);
-      ctx.strokeStyle = "#fff";
+      ctx.strokeStyle = '#fff';
       ctx.lineWidth = 2.5;
       ctx.stroke();
     }
 
     for (const piece of pieces) {
       const position = this.nodes[piece.node];
-      const isThief = piece.type === "thief";
+      const isThief = piece.type === 'thief';
       ctx.beginPath();
       ctx.arc(position.x, position.y, 17.5, 0, Math.PI * 2);
-      ctx.fillStyle = isThief ? "#4caf50" : "#2196f3";
+      ctx.fillStyle = isThief ? '#4caf50' : '#2196f3';
       ctx.fill();
-      ctx.strokeStyle = isThief ? "#183c1a" : "#123c65";
+      ctx.strokeStyle = isThief ? '#183c1a' : '#123c65';
       ctx.lineWidth = 3;
       ctx.stroke();
       ctx.beginPath();
       ctx.arc(position.x - 5, position.y - 6, 4, 0, Math.PI * 2);
-      ctx.fillStyle = "#ffffff35";
+      ctx.fillStyle = '#ffffff35';
       ctx.fill();
     }
     ctx.restore();
@@ -168,36 +160,42 @@ class Board {
 }
 
 const board = new Board();
-const canvas = document.getElementById("board");
-const ctx = canvas.getContext("2d");
+const canvas = document.getElementById('board');
+const ctx = canvas.getContext('2d');
 const elements = {
-  lobby: document.getElementById("lobby"),
-  gameView: document.getElementById("gameView"),
-  connectionPill: document.getElementById("connectionPill"),
-  connectionText: document.getElementById("connectionText"),
-  lobbyFeedback: document.getElementById("lobbyFeedback"),
-  createRoom: document.getElementById("createRoom"),
-  createAiRoom: document.getElementById("createAiRoom"),
-  createAiThiefRoom: document.getElementById("createAiThiefRoom"),
-  joinRoom: document.getElementById("joinRoom"),
-  roomCodeInput: document.getElementById("roomCodeInput"),
-  roomCodeDisplay: document.getElementById("roomCodeDisplay"),
-  copyCode: document.getElementById("copyCode"),
-  myRole: document.getElementById("myRole"),
-  myRoleDescription: document.getElementById("myRoleDescription"),
-  turnTitle: document.getElementById("turnTitle"),
-  statusText: document.getElementById("statusText"),
-  turnDot: document.getElementById("turnDot"),
-  turnLabel: document.getElementById("turnLabel"),
-  thiefPresence: document.getElementById("thiefPresence"),
-  policePresence: document.getElementById("policePresence"),
-  thiefOnline: document.getElementById("thiefOnline"),
-  policeOnline: document.getElementById("policeOnline"),
-  turnCount: document.getElementById("turnCount"),
-  thiefCount: document.getElementById("thiefCount"),
-  message: document.getElementById("message"),
-  resetGame: document.getElementById("resetGame"),
-  leaveRoom: document.getElementById("leaveRoom"),
+  lobby: document.getElementById('lobby'),
+  gameView: document.getElementById('gameView'),
+  connectionPill: document.getElementById('connectionPill'),
+  connectionText: document.getElementById('connectionText'),
+  lobbyFeedback: document.getElementById('lobbyFeedback'),
+  createRoom: document.getElementById('createRoom'),
+  createAiRoom: document.getElementById('createAiRoom'),
+  createAiThiefRoom: document.getElementById('createAiThiefRoom'),
+  joinRoom: document.getElementById('joinRoom'),
+  roomCodeInput: document.getElementById('roomCodeInput'),
+  roomCodeDisplay: document.getElementById('roomCodeDisplay'),
+  copyCode: document.getElementById('copyCode'),
+  myRole: document.getElementById('myRole'),
+  myRoleDescription: document.getElementById('myRoleDescription'),
+  turnTitle: document.getElementById('turnTitle'),
+  statusText: document.getElementById('statusText'),
+  turnDot: document.getElementById('turnDot'),
+  turnLabel: document.getElementById('turnLabel'),
+  thiefPresence: document.getElementById('thiefPresence'),
+  policePresence: document.getElementById('policePresence'),
+  thiefOnline: document.getElementById('thiefOnline'),
+  policeOnline: document.getElementById('policeOnline'),
+  turnCount: document.getElementById('turnCount'),
+  thiefCount: document.getElementById('thiefCount'),
+  message: document.getElementById('message'),
+  resetGame: document.getElementById('resetGame'),
+  leaveRoom: document.getElementById('leaveRoom'),
+  gameOverOverlay: document.getElementById('gameOverOverlay'),
+  gameOverIcon: document.getElementById('gameOverIcon'),
+  gameOverTitle: document.getElementById('gameOverTitle'),
+  gameOverWinner: document.getElementById('gameOverWinner'),
+  gameOverReason: document.getElementById('gameOverReason'),
+  gameOverRestart: document.getElementById('gameOverRestart')
 };
 
 let myRole = null;
@@ -206,30 +204,29 @@ let gameState = null;
 let selectedNode = null;
 let legalNodes = [];
 let movePending = false;
-let localNotice = "";
+let localNotice = '';
 
 function setConnection(status, message) {
-  elements.connectionPill.classList.remove("connected", "disconnected");
+  elements.connectionPill.classList.remove('connected', 'disconnected');
   if (status) elements.connectionPill.classList.add(status);
   elements.connectionText.textContent = message;
 }
 
-function showLobby(message = "") {
-  elements.lobby.classList.remove("hidden");
-  elements.gameView.classList.add("hidden");
+function showLobby(message = '') {
+  elements.lobby.classList.remove('hidden');
+  elements.gameView.classList.add('hidden');
   if (message) elements.lobbyFeedback.textContent = message;
 }
 
 function showGame() {
-  elements.lobby.classList.add("hidden");
-  elements.gameView.classList.remove("hidden");
+  elements.lobby.classList.add('hidden');
+  elements.gameView.classList.remove('hidden');
   render();
 }
 
 function enterRoom(response) {
   if (!response || !response.ok) {
-    elements.lobbyFeedback.textContent =
-      response?.error || "Impossible de rejoindre cette salle.";
+    elements.lobbyFeedback.textContent = response?.error || 'Impossible de rejoindre cette salle.';
     return;
   }
   roomCode = response.code;
@@ -238,23 +235,18 @@ function enterRoom(response) {
   selectedNode = null;
   legalNodes = [];
   movePending = false;
-  localNotice = "";
-  localStorage.setItem(
-    "policeVoleurRoom",
-    JSON.stringify({ code: roomCode, role: myRole }),
-  );
+  localNotice = '';
+  localStorage.setItem('policeVoleurRoom', JSON.stringify({ code: roomCode, role: myRole }));
   showGame();
 }
 
 function currentPlayerPieces() {
-  return gameState.pieces.filter((piece) => piece.type === myRole);
+  return gameState.pieces.filter(piece => piece.type === myRole);
 }
 
 function calculateLegalMoves(piece) {
-  const occupied = new Set(
-    gameState.pieces.filter((p) => p !== piece).map((p) => p.node),
-  );
-  return board.neighbors(piece.node).filter((node) => !occupied.has(node));
+  const occupied = new Set(gameState.pieces.filter(p => p !== piece).map(p => p.node));
+  return board.neighbors(piece.node).filter(node => !occupied.has(node));
 }
 
 function render() {
@@ -262,68 +254,68 @@ function render() {
 
   const players = gameState.playersOnline || { thief: false, police: false };
   const bothConnected = players.thief && players.police;
-  const isMyTurn =
-    gameState.turn === myRole && !gameState.gameOver && bothConnected;
-  const roleName = myRole === "thief" ? "Voleur" : "Policiers";
-  const opponentName = myRole === "thief" ? "Policiers" : "Voleur";
+  const isMyTurn = gameState.turn === myRole && !gameState.gameOver && bothConnected;
+  const roleName = myRole === 'thief' ? 'Voleur' : 'Policiers';
+  const opponentName = myRole === 'thief' ? 'Policiers' : 'Voleur';
 
   elements.roomCodeDisplay.textContent = roomCode;
   elements.myRole.textContent = roleName;
   elements.myRoleDescription.textContent = gameState.aiMode
-    ? myRole === "thief"
-      ? "Tu contrôles le voleur contre une IA qui coordonne les trois policiers."
-      : "Tu contrôles les trois policiers contre une IA qui cherche le centre."
-    : myRole === "thief"
-      ? "Tu contrôles le pion vert."
-      : "Tu contrôles les trois pions bleus.";
+    ? (myRole === 'thief'
+      ? 'Tu contrôles le voleur contre une IA qui coordonne les trois policiers.'
+      : 'Tu contrôles les trois policiers contre une IA qui cherche le centre.')
+    : (myRole === 'thief' ? 'Tu contrôles le pion vert.' : 'Tu contrôles les trois pions bleus.');
 
   if (gameState.gameOver) {
-    elements.turnTitle.textContent = "Partie terminée";
-    elements.statusText.textContent =
-      gameState.winner === myRole
-        ? "Bravo, tu as gagné !"
-        : "Ton adversaire a gagné cette partie.";
-    elements.turnLabel.textContent = "Fin de partie";
-    elements.turnDot.style.background = "#e45b61";
-  } else if (!bothConnected) {
-    elements.turnTitle.textContent = "En attente du joueur";
-    elements.statusText.textContent =
-      "La partie commencera lorsque les deux joueurs seront connectés.";
-    elements.turnLabel.textContent = "Salle incomplète";
-    elements.turnDot.style.background = "#d69e35";
+    elements.turnTitle.textContent = 'Partie terminée';
+    elements.statusText.textContent = gameState.winner === myRole ? 'Bravo, tu as gagné !' : 'Ton adversaire a gagné cette partie.';
+    elements.turnLabel.textContent = 'Fin de partie';
+    elements.turnDot.style.background = '#e45b61';
+
+    const didWin = gameState.winner === myRole;
+    const winnerRole = gameState.winner === 'thief' ? 'Voleur' : 'Policiers';
+    const winnerName = gameState.aiMode && gameState.winner === gameState.aiRole
+      ? `l’IA Minimax (${winnerRole.toLowerCase()})`
+      : winnerRole;
+    elements.gameOverIcon.innerHTML = didWin ? '<i class="fas fa-trophy"></i>' : '<i class="fas fa-bullseye"></i>';
+    elements.gameOverTitle.textContent = didWin ? 'Victoire !' : 'Défaite !';
+    elements.gameOverWinner.textContent = didWin
+      ? 'Félicitations, tu as gagné !'
+      : `Vainqueur : ${winnerName}`;
+    elements.gameOverReason.textContent = gameState.message || 'La partie est terminée.';
+    elements.gameOverOverlay.classList.remove('hidden');
   } else {
-    const turnName = gameState.turn === "thief" ? "Voleur" : "Policiers";
-    elements.turnTitle.textContent = `Tour des ${turnName}`;
-    elements.statusText.textContent = isMyTurn
-      ? "C’est à toi de jouer. Sélectionne un de tes pions."
-      : gameState.aiMode
-        ? "L’IA Minimax calcule son meilleur déplacement…"
-        : `Attends le déplacement de ton adversaire (${opponentName.toLowerCase()}).`;
-    elements.turnLabel.textContent = isMyTurn
-      ? "À toi de jouer"
-      : `Adversaire : ${turnName}`;
-    elements.turnDot.style.background =
-      gameState.turn === "thief" ? "#4caf50" : "#2196f3";
+    elements.gameOverOverlay.classList.add('hidden');
   }
 
-  elements.thiefPresence.classList.toggle("online", Boolean(players.thief));
-  elements.policePresence.classList.toggle("online", Boolean(players.police));
-  elements.thiefOnline.textContent =
-    gameState.aiMode && gameState.aiRole === "thief"
-      ? "IA Minimax"
-      : players.thief
-        ? "Connecté"
-        : "Absent";
-  elements.policeOnline.textContent =
-    gameState.aiMode && gameState.aiRole === "police"
-      ? "IA Minimax"
-      : players.police
-        ? "Connecté"
-        : "Absent";
+  if (!gameState.gameOver && !bothConnected) {
+    elements.turnTitle.textContent = 'En attente du joueur';
+    elements.statusText.textContent = 'La partie commencera lorsque les deux joueurs seront connectés.';
+    elements.turnLabel.textContent = 'Salle incomplète';
+    elements.turnDot.style.background = '#d69e35';
+  } else if (!gameState.gameOver) {
+    const turnName = gameState.turn === 'thief' ? 'Voleur' : 'Policiers';
+    elements.turnTitle.textContent = `Tour des ${turnName}`;
+    elements.statusText.textContent = isMyTurn
+      ? 'C’est à toi de jouer. Sélectionne un de tes pions.'
+      : (gameState.aiMode
+        ? 'L’IA Minimax calcule son meilleur déplacement…'
+        : `Attends le déplacement de ton adversaire (${opponentName.toLowerCase()}).`);
+    elements.turnLabel.textContent = isMyTurn ? 'À toi de jouer' : `Adversaire : ${turnName}`;
+    elements.turnDot.style.background = gameState.turn === 'thief' ? '#4caf50' : '#2196f3';
+  }
+
+  elements.thiefPresence.classList.toggle('online', Boolean(players.thief));
+  elements.policePresence.classList.toggle('online', Boolean(players.police));
+  elements.thiefOnline.textContent = gameState.aiMode && gameState.aiRole === 'thief'
+    ? 'IA Minimax' : (players.thief ? 'Connecté' : 'Absent');
+  elements.policeOnline.textContent = gameState.aiMode && gameState.aiRole === 'police'
+    ? 'IA Minimax' : (players.police ? 'Connecté' : 'Absent');
   elements.turnCount.textContent = gameState.turns;
   elements.thiefCount.textContent = gameState.thiefMoves;
   elements.message.textContent = localNotice || gameState.message;
   elements.resetGame.disabled = !bothConnected;
+  elements.gameOverRestart.disabled = !bothConnected;
   draw();
 }
 
@@ -339,14 +331,12 @@ function handleBoardClick(event) {
   if (!gameState || !myRole || gameState.gameOver || movePending) return;
   const players = gameState.playersOnline || {};
   if (!players.thief || !players.police) {
-    localNotice = gameState.aiMode
-      ? "Préparation de la partie contre l’IA…"
-      : "La partie attend la connexion des deux joueurs.";
+    localNotice = gameState.aiMode ? 'Préparation de la partie contre l’IA…' : 'La partie attend la connexion des deux joueurs.';
     render();
     return;
   }
   if (gameState.turn !== myRole) {
-    localNotice = "Ce n’est pas ton tour. Attends ton adversaire.";
+    localNotice = 'Ce n’est pas ton tour. Attends ton adversaire.';
     elements.message.textContent = localNotice;
     return;
   }
@@ -365,25 +355,25 @@ function handleBoardClick(event) {
   }
   if (nodeId === null) return;
 
-  const ownPiece = currentPlayerPieces().find((piece) => piece.node === nodeId);
+  const ownPiece = currentPlayerPieces().find(piece => piece.node === nodeId);
   if (ownPiece) {
     selectedNode = nodeId;
     legalNodes = calculateLegalMoves(ownPiece);
     localNotice = legalNodes.length
-      ? "Choisis une intersection voisine mise en évidence."
-      : "Ce pion ne peut pas se déplacer. Sélectionne un autre pion.";
+      ? 'Choisis une intersection voisine mise en évidence.'
+      : 'Ce pion ne peut pas se déplacer. Sélectionne un autre pion.';
     render();
     return;
   }
 
   if (selectedNode !== null && legalNodes.includes(nodeId)) {
     movePending = true;
-    localNotice = "Déplacement en cours…";
+    localNotice = 'Déplacement en cours…';
     render();
-    socket.emit("move", { from: selectedNode, to: nodeId }, (response) => {
+    socket.emit('move', { from: selectedNode, to: nodeId }, response => {
       movePending = false;
       if (!response?.ok) {
-        localNotice = response?.error || "Le déplacement a été refusé.";
+        localNotice = response?.error || 'Le déplacement a été refusé.';
         render();
       }
     });
@@ -394,22 +384,21 @@ function handleBoardClick(event) {
 
   selectedNode = null;
   legalNodes = [];
-  localNotice = "Sélectionne un de tes pions.";
+  localNotice = 'Sélectionne un de tes pions.';
   render();
 }
 
 function requestRoom(action, payload = {}) {
   if (!socket.connected) {
-    elements.lobbyFeedback.textContent =
-      "Le serveur est inaccessible. Vérifie que le serveur Node.js est démarré.";
+    elements.lobbyFeedback.textContent = 'Le serveur est inaccessible. Vérifie que le serveur Node.js est démarré.';
     return;
   }
   elements.createRoom.disabled = true;
   elements.createAiRoom.disabled = true;
   if (elements.createAiThiefRoom) elements.createAiThiefRoom.disabled = true;
   elements.joinRoom.disabled = true;
-  elements.lobbyFeedback.textContent = "Connexion à la salle…";
-  socket.emit(action, payload, (response) => {
+  elements.lobbyFeedback.textContent = 'Connexion à la salle…';
+  socket.emit(action, payload, response => {
     elements.createRoom.disabled = false;
     elements.createAiRoom.disabled = false;
     if (elements.createAiThiefRoom) elements.createAiThiefRoom.disabled = false;
@@ -418,114 +407,108 @@ function requestRoom(action, payload = {}) {
   });
 }
 
-elements.createRoom.addEventListener("click", () => requestRoom("createRoom"));
-elements.createAiRoom.addEventListener("click", () =>
-  requestRoom("createAiRoom", { role: "thief" }),
-);
+elements.createRoom.addEventListener('click', () => requestRoom('createRoom'));
+elements.createAiRoom.addEventListener('click', () => requestRoom('createAiRoom', { role: 'thief' }));
 if (elements.createAiThiefRoom) {
-  elements.createAiThiefRoom.addEventListener("click", () =>
-    requestRoom("createAiRoom", { role: "police" }),
-  );
+  elements.createAiThiefRoom.addEventListener('click', () => requestRoom('createAiRoom', { role: 'police' }));
 }
-elements.joinRoom.addEventListener("click", () => {
+elements.joinRoom.addEventListener('click', () => {
   const code = elements.roomCodeInput.value.trim().toUpperCase();
   if (!code) {
-    elements.lobbyFeedback.textContent = "Entre le code de la salle.";
+    elements.lobbyFeedback.textContent = 'Entre le code de la salle.';
     return;
   }
-  requestRoom("joinRoom", { code });
+  requestRoom('joinRoom', { code });
 });
-elements.roomCodeInput.addEventListener("input", () => {
-  elements.roomCodeInput.value = elements.roomCodeInput.value
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, "");
+elements.roomCodeInput.addEventListener('input', () => {
+  elements.roomCodeInput.value = elements.roomCodeInput.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
 });
-elements.roomCodeInput.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") elements.joinRoom.click();
+elements.roomCodeInput.addEventListener('keydown', event => {
+  if (event.key === 'Enter') elements.joinRoom.click();
 });
 
-canvas.addEventListener("click", handleBoardClick);
-elements.resetGame.addEventListener("click", () => {
+canvas.addEventListener('click', handleBoardClick);
+function requestGameReset() {
   if (!roomCode) return;
-  socket.emit("resetGame", (response) => {
+  elements.gameOverRestart.disabled = true;
+  elements.resetGame.disabled = true;
+  socket.emit('resetGame', response => {
+    elements.gameOverRestart.disabled = false;
     if (!response?.ok) {
-      localNotice = response?.error || "Impossible de recommencer la partie.";
+      localNotice = response?.error || 'Impossible de recommencer la partie.';
       render();
     }
   });
-});
-elements.leaveRoom.addEventListener("click", () => {
-  socket.emit("leaveRoom");
-  localStorage.removeItem("policeVoleurRoom");
+}
+
+elements.resetGame.addEventListener('click', requestGameReset);
+elements.gameOverRestart.addEventListener('click', requestGameReset);
+elements.leaveRoom.addEventListener('click', () => {
+  socket.emit('leaveRoom');
+  localStorage.removeItem('policeVoleurRoom');
   roomCode = null;
   myRole = null;
   gameState = null;
   selectedNode = null;
   legalNodes = [];
   movePending = false;
-  showLobby(
-    "Tu as quitté la salle. Tu peux en créer une autre ou en rejoindre une nouvelle.",
-  );
+  showLobby('Tu as quitté la salle. Tu peux en créer une autre ou en rejoindre une nouvelle.');
 });
-elements.copyCode.addEventListener("click", async () => {
+elements.copyCode.addEventListener('click', async () => {
   if (!roomCode) return;
   try {
     await navigator.clipboard.writeText(roomCode);
-    elements.copyCode.textContent = "Copié !";
-    setTimeout(() => {
-      elements.copyCode.textContent = "Copier";
-    }, 1300);
+    elements.copyCode.textContent = 'Copié !';
+    setTimeout(() => { elements.copyCode.textContent = 'Copier'; }, 1300);
   } catch {
     elements.lobbyFeedback.textContent = `Code de la salle : ${roomCode}`;
   }
 });
 
-socket.on("connect", () => {
-  setConnection("connected", "Connecté au serveur");
-  const savedRoom = localStorage.getItem("policeVoleurRoom");
+socket.on('connect', () => {
+  setConnection('connected', 'Connecté au serveur');
+  const savedRoom = localStorage.getItem('policeVoleurRoom');
   if (savedRoom) {
     try {
       const saved = JSON.parse(savedRoom);
-      socket.emit("rejoinRoom", saved, (response) => {
+      socket.emit('rejoinRoom', saved, response => {
         if (response?.ok) enterRoom(response);
         else {
-          localStorage.removeItem("policeVoleurRoom");
-          showLobby(response?.error || "La reconnexion à la salle a échoué.");
+          localStorage.removeItem('policeVoleurRoom');
+          showLobby(response?.error || 'La reconnexion à la salle a échoué.');
         }
       });
     } catch {
-      localStorage.removeItem("policeVoleurRoom");
+      localStorage.removeItem('policeVoleurRoom');
     }
   }
 });
 
-socket.on("disconnect", () => {
-  setConnection("disconnected", "Serveur déconnecté");
+socket.on('disconnect', () => {
+  setConnection('disconnected', 'Serveur déconnecté');
   if (gameState) {
-    localNotice = "Connexion perdue. Reconnexion automatique en cours…";
+    localNotice = 'Connexion perdue. Reconnexion automatique en cours…';
     elements.message.textContent = localNotice;
   } else {
-    elements.lobbyFeedback.textContent =
-      "Connexion au serveur perdue. Vérifie le réseau local.";
+    elements.lobbyFeedback.textContent = 'Connexion au serveur perdue. Vérifie le réseau local.';
   }
 });
 
-socket.on("gameUpdate", (payload) => {
+socket.on('gameUpdate', payload => {
   if (!roomCode || payload.code !== roomCode) return;
   gameState = payload.state;
   selectedNode = null;
   legalNodes = [];
   movePending = false;
-  localNotice = "";
+  localNotice = '';
   render();
 });
 
-socket.on("connect_error", () => {
-  setConnection("disconnected", "Serveur inaccessible");
-  elements.lobbyFeedback.textContent =
-    "Impossible de joindre le serveur. Vérifie son adresse et le réseau Wi-Fi.";
+socket.on('connect_error', () => {
+  setConnection('disconnected', 'Serveur inaccessible');
+  elements.lobbyFeedback.textContent = 'Impossible de joindre le serveur. Vérifie son adresse et le réseau Wi-Fi.';
 });
 
-window.addEventListener("resize", draw);
+window.addEventListener('resize', draw);
 
-setConnection("", "Connexion au serveur…");
+setConnection('', 'Connexion au serveur…');
