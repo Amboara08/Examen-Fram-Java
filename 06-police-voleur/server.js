@@ -112,7 +112,9 @@ function createInitialState() {
   };
 }
 
-// --- Intelligence artificielle : Minimax + élagage Alpha-Bêta ---
+// --- IA stratégique : Minimax + Alpha-Bêta + tri des coups ---
+// Le score est toujours exprimé du point de vue du voleur :
+// positif = avantage voleur ; négatif = avantage policiers.
 function cloneState(state) {
   return { pieces: state.pieces.map((piece) => ({ ...piece })) };
 }
@@ -124,12 +126,12 @@ function legalMovesFor(state, piece) {
   return adjacency[piece.node].filter((node) => !occupied.has(node));
 }
 
-function shortestDistance(start, target, blocked) {
+function shortestDistance(start, target, blocked = new Set()) {
   if (start === target) return 0;
   const queue = [[start, 0]];
   const visited = new Set([start]);
-  while (queue.length) {
-    const [node, distance] = queue.shift();
+  for (let index = 0; index < queue.length; index++) {
+    const [node, distance] = queue[index];
     for (const next of adjacency[node]) {
       if (blocked.has(next) || visited.has(next)) continue;
       if (next === target) return distance + 1;
@@ -140,70 +142,163 @@ function shortestDistance(start, target, blocked) {
   return 99;
 }
 
-// Score positif = avantage au voleur ; score négatif = avantage aux policiers.
 function evaluateState(state) {
   const thief = state.pieces.find((piece) => piece.type === "thief");
   const police = state.pieces.filter((piece) => piece.type === "police");
   const thiefMoves = legalMovesFor(state, thief);
+
   if (thief.node === CENTER_NODE) return 100000;
   if (thiefMoves.length === 0) return -100000;
   if (police.every((piece) => legalMovesFor(state, piece).length === 0))
     return 100000;
 
-  const blocked = new Set(
-    state.pieces
-      .filter((piece) => piece.type === "police")
-      .map((piece) => piece.node),
+  const policeNodes = new Set(police.map((piece) => piece.node));
+  const distanceToCenter = shortestDistance(
+    thief.node,
+    CENTER_NODE,
+    policeNodes,
   );
-  const distanceToCenter = shortestDistance(thief.node, CENTER_NODE, blocked);
+  if (distanceToCenter === 99) return -50000;
+
   const policeDistances = police.map((piece) => {
-    const occupiedByOthers = new Set(
-      state.pieces
-        .filter((other) => other !== piece && other !== thief)
-        .map((other) => other.node),
+    const otherPolice = new Set(
+      police.filter((other) => other !== piece).map((other) => other.node),
     );
-    return shortestDistance(piece.node, thief.node, occupiedByOthers);
+    return shortestDistance(piece.node, thief.node, otherPolice);
   });
   const closestPolice = Math.min(...policeDistances);
-  return distanceToCenter * 12 - closestPolice * 4 + thiefMoves.length * 3;
+  const totalPoliceDistance = policeDistances.reduce(
+    (sum, value) => sum + value,
+    0,
+  );
+  const freeCenterEntrances = adjacency[CENTER_NODE].filter(
+    (node) => !policeNodes.has(node),
+  ).length;
+
+  // Le voleur préfère être proche du centre, garder plusieurs sorties et
+  // maintenir les policiers à distance. Les policiers cherchent l'inverse.
+  return (
+    -distanceToCenter * 24 +
+    closestPolice * 9 +
+    totalPoliceDistance * 2 +
+    thiefMoves.length * 5 +
+    freeCenterEntrances * 7
+  );
 }
 
-function minimax(state, depth, alpha, beta, maximizingThief) {
-  const score = evaluateState(state);
-  if (depth === 0 || Math.abs(score) >= 100000) return { score };
-  const role = maximizingThief ? "thief" : "police";
-  const pieces = state.pieces.filter((piece) => piece.type === role);
-  let best = maximizingThief ? -Infinity : Infinity;
-  let bestMove = null;
+function positionKey(state, turn) {
+  const thief = state.pieces.find((piece) => piece.type === "thief").node;
+  const police = state.pieces
+    .filter((piece) => piece.type === "police")
+    .map((piece) => piece.node)
+    .sort((a, b) => a - b);
+  return `${turn}|${thief}|${police.join(",")}`;
+}
+
+function generateOrderedMoves(state, turn) {
+  const pieces = state.pieces.filter((piece) => piece.type === turn);
+  const moves = [];
   for (const piece of pieces) {
     for (const to of legalMovesFor(state, piece)) {
       const next = cloneState(state);
       const moving = next.pieces.find(
-        (item) => item.type === role && item.node === piece.node,
+        (item) => item.type === turn && item.node === piece.node,
       );
       moving.node = to;
-      const result = minimax(next, depth - 1, alpha, beta, !maximizingThief);
-      if (
-        (maximizingThief && result.score > best) ||
-        (!maximizingThief && result.score < best)
-      ) {
-        best = result.score;
-        bestMove = { from: piece.node, to };
-      }
-      if (maximizingThief) alpha = Math.max(alpha, best);
-      else beta = Math.min(beta, best);
-      if (beta <= alpha) break;
+      moves.push({
+        from: piece.node,
+        to,
+        state: next,
+        score: evaluateState(next),
+      });
     }
-    if (beta <= alpha) break;
   }
-  return { score: best, move: bestMove };
+  // Explorer d'abord les coups les plus prometteurs améliore fortement
+  // l'efficacité de l'élagage Alpha-Bêta.
+  moves.sort((a, b) =>
+    turn === "thief" ? b.score - a.score : a.score - b.score,
+  );
+  return moves;
 }
 
-function choosePoliceAIMove(state) {
-  // Les policiers minimisent le score du voleur. Profondeur 4 :
-  // police -> voleur -> police -> voleur.
-  const result = minimax(cloneState(state), 4, -Infinity, Infinity, false);
-  return result.move;
+function minimax(state, depth, alpha, beta, turn, table, budget) {
+  budget.nodes++;
+  const score = evaluateState(state);
+  if (
+    depth === 0 ||
+    Math.abs(score) >= 100000 ||
+    budget.nodes >= budget.maxNodes
+  ) {
+    return { score, move: null };
+  }
+
+  const key = positionKey(state, turn);
+  const cached = table.get(key);
+  if (cached && cached.depth >= depth)
+    return { score: cached.score, move: cached.move };
+
+  const moves = generateOrderedMoves(state, turn);
+  if (!moves.length)
+    return { score: turn === "thief" ? -100000 : 100000, move: null };
+
+  const maximizing = turn === "thief";
+  let bestScore = maximizing ? -Infinity : Infinity;
+  let bestMove = null;
+  let fullySearched = true;
+
+  for (const candidate of moves) {
+    const result = minimax(
+      candidate.state,
+      depth - 1,
+      alpha,
+      beta,
+      maximizing ? "police" : "thief",
+      table,
+      budget,
+    );
+    if (
+      (maximizing && result.score > bestScore) ||
+      (!maximizing && result.score < bestScore)
+    ) {
+      bestScore = result.score;
+      bestMove = { from: candidate.from, to: candidate.to };
+    }
+    if (maximizing) alpha = Math.max(alpha, bestScore);
+    else beta = Math.min(beta, bestScore);
+    if (beta <= alpha || budget.nodes >= budget.maxNodes) {
+      fullySearched = false;
+      break;
+    }
+  }
+
+  // Ne conserver que les résultats exacts dans la table de transposition.
+  if (fullySearched)
+    table.set(key, { depth, score: bestScore, move: bestMove });
+  return { score: bestScore, move: bestMove };
+}
+
+function chooseAIMove(state, aiRole) {
+  if (state.turn !== aiRole) return null;
+  const table = new Map();
+  const budget = { nodes: 0, maxNodes: 90000 };
+  let bestMove = null;
+  // Approfondissement itératif : on garde toujours le meilleur coup déjà trouvé.
+  // La profondeur maximale de 10 demi-coups anticipe plusieurs réponses adverses.
+  for (let depth = 1; depth <= 10; depth++) {
+    const result = minimax(
+      cloneState(state),
+      depth,
+      -Infinity,
+      Infinity,
+      state.turn,
+      table,
+      budget,
+    );
+    if (result.move) bestMove = result.move;
+    if (Math.abs(result.score) >= 100000 || budget.nodes >= budget.maxNodes)
+      break;
+  }
+  return bestMove;
 }
 
 function applyMove(room, role, from, to) {
@@ -227,7 +322,9 @@ function applyMove(room, role, from, to) {
     } else {
       state.turn = "police";
       state.message = room.aiMode
-        ? "L’IA analyse les déplacements…"
+        ? room.aiRole === "thief"
+          ? "L’IA a joué. À toi de déplacer les policiers !"
+          : "L’IA analyse les déplacements…"
         : "Le voleur a joué. Au tour des policiers.";
     }
   } else {
@@ -256,15 +353,20 @@ function applyMove(room, role, from, to) {
 }
 
 function playAIMove(room) {
-  if (!room.aiMode || room.state.gameOver || room.state.turn !== "police")
+  if (!room.aiMode || room.state.gameOver || room.state.turn !== room.aiRole)
     return;
-  const move = choosePoliceAIMove(room.state);
-  if (move) applyMove(room, "police", move.from, move.to);
-  else {
+  const aiRole = room.aiRole;
+  const move = chooseAIMove(room.state, aiRole);
+  if (move) {
+    applyMove(room, aiRole, move.from, move.to);
+  } else {
     room.state.gameOver = true;
-    room.state.winner = "thief";
+    room.state.winner = aiRole === "thief" ? "police" : "thief";
     room.state.turn = "over";
-    room.state.message = "Les policiers ne peuvent plus bouger. Tu gagnes !";
+    room.state.message =
+      aiRole === "thief"
+        ? "Le voleur ne peut plus avancer. Les policiers gagnent !"
+        : "Les policiers ne peuvent plus bouger. Tu gagnes !";
   }
   emitRoomUpdate(room);
 }
@@ -303,9 +405,15 @@ function snapshot(room) {
     winner: room.state.winner,
     message: room.state.message,
     lastMove: room.state.lastMove ? { ...room.state.lastMove } : null,
+    aiMode: Boolean(room.aiMode),
+    aiRole: room.aiRole || null,
     playersOnline: {
-      thief: Boolean(room.players.thief),
-      police: room.aiMode ? true : Boolean(room.players.police),
+      thief: room.aiMode
+        ? room.aiRole === "thief" || Boolean(room.players.thief)
+        : Boolean(room.players.thief),
+      police: room.aiMode
+        ? room.aiRole === "police" || Boolean(room.players.police)
+        : Boolean(room.players.police),
     },
   };
 }
@@ -374,28 +482,36 @@ io.on("connection", (socket) => {
     acknowledge(callback, attachSocket(socket, room, "thief"));
   });
 
-  socket.on("createAiRoom", (_payload, callback) => {
+  socket.on("createAiRoom", (payload = {}, callback) => {
     releaseSocketFromRoom(socket);
+    const humanRole = payload.role === "police" ? "police" : "thief";
+    const aiRole = humanRole === "thief" ? "police" : "thief";
     const code = getRoomCode();
+    const players = { thief: null, police: null };
+    players[humanRole] = socket.id;
     const room = {
       code,
-      players: { thief: socket.id, police: null },
+      players,
       aiMode: true,
+      aiRole,
+      humanRole,
       state: createInitialState(),
     };
     rooms.set(code, room);
     socket.join(code);
     socket.data.roomCode = code;
-    socket.data.role = "thief";
+    socket.data.role = humanRole;
     room.state.message =
-      "Tu joues le voleur. L’IA Minimax contrôle les trois policiers.";
-    emitRoomUpdate(room);
+      humanRole === "thief"
+        ? "Tu joues le voleur. L’IA Minimax contrôle les trois policiers."
+        : "Tu contrôles les trois policiers. L’IA Minimax joue le voleur et cherche le centre.";
     acknowledge(callback, {
       ok: true,
       code,
-      role: "thief",
+      role: humanRole,
       state: snapshot(room),
     });
+    if (room.state.turn === aiRole) setImmediate(() => playAIMove(room));
   });
 
   socket.on("joinRoom", (payload = {}, callback) => {
@@ -408,6 +524,13 @@ io.on("connection", (socket) => {
       acknowledge(callback, {
         ok: false,
         error: "Salle introuvable. Vérifie le code.",
+      });
+      return;
+    }
+    if (room.aiMode) {
+      acknowledge(callback, {
+        ok: false,
+        error: "Cette salle est réservée à une partie contre l’IA.",
       });
       return;
     }
@@ -432,7 +555,11 @@ io.on("connection", (socket) => {
       .toUpperCase();
     const role = payload.role;
     const room = rooms.get(code);
-    if (!room || !["thief", "police"].includes(role)) {
+    if (
+      !room ||
+      !["thief", "police"].includes(role) ||
+      (room.aiMode && role !== room.humanRole)
+    ) {
       acknowledge(callback, {
         ok: false,
         error: "La salle n’existe plus. Crée une nouvelle partie.",
@@ -461,7 +588,10 @@ io.on("connection", (socket) => {
       });
       return;
     }
-    if (!room.players.thief || (!room.aiMode && !room.players.police)) {
+    const ready = room.aiMode
+      ? Boolean(room.players[room.humanRole])
+      : Boolean(room.players.thief && room.players.police);
+    if (!ready) {
       acknowledge(callback, {
         ok: false,
         error: "La partie attend la connexion des deux joueurs.",
@@ -502,7 +632,11 @@ io.on("connection", (socket) => {
       acknowledge(callback, { ok: false, error: "Déplacement invalide." });
       return;
     }
-    if (room.aiMode && !room.state.gameOver && room.state.turn === "police") {
+    if (
+      room.aiMode &&
+      !room.state.gameOver &&
+      room.state.turn === room.aiRole
+    ) {
       // Le coup de l’IA est calculé côté serveur ; le LAN humain-humain reste inchangé.
       playAIMove(room);
     } else {
@@ -520,19 +654,26 @@ io.on("connection", (socket) => {
       });
       return;
     }
-    if (!room.players.thief || (!room.aiMode && !room.players.police)) {
+    const ready = room.aiMode
+      ? Boolean(room.players[room.humanRole])
+      : Boolean(room.players.thief && room.players.police);
+    if (!ready) {
       acknowledge(callback, {
         ok: false,
-        error: "Il faut deux joueurs connectés pour commencer.",
+        error: "Il faut que les joueurs soient connectés pour commencer.",
       });
       return;
     }
     room.state = createInitialState();
     room.state.message = room.aiMode
-      ? "Nouvelle partie ! Tu joues le voleur contre l’IA Minimax."
+      ? room.humanRole === "thief"
+        ? "Nouvelle partie ! Tu joues le voleur contre les policiers Minimax."
+        : "Nouvelle partie ! Tu contrôles les policiers contre le voleur Minimax."
       : "Nouvelle partie ! Les pions ont été replacés aléatoirement. Le voleur commence.";
     emitRoomUpdate(room);
     acknowledge(callback, { ok: true });
+    if (room.aiMode && room.state.turn === room.aiRole)
+      setImmediate(() => playAIMove(room));
   });
 
   socket.on("leaveRoom", () => releaseSocketFromRoom(socket));

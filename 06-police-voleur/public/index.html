@@ -14,7 +14,8 @@
           <p class="eyebrow">JEU DE STRATÉGIE · RÉSEAU LOCAL</p>
           <h1>Police et Voleur</h1>
           <p class="subtitle">
-            Affrontez-vous depuis deux appareils connectés au même Wi-Fi.
+            Jouez en réseau local ou affrontez une IA Minimax dans les deux
+            rôles.
           </p>
         </div>
         <div class="connection-pill" id="connectionPill">
@@ -29,7 +30,8 @@
           <div>
             <h2>Rejoindre une partie</h2>
             <p>
-              Crée une salle LAN pour jouer à deux, ou affronte l’IA Minimax.
+              Crée une salle LAN ou choisis ton camp contre l’intelligence
+              artificielle.
             </p>
           </div>
         </div>
@@ -47,7 +49,14 @@
               id="createAiRoom"
               type="button"
             >
-              Jouer contre l’IA (Minimax)
+              Jouer le voleur contre l’IA policière
+            </button>
+            <button
+              class="button button-secondary"
+              id="createAiThiefRoom"
+              type="button"
+            >
+              Jouer les policiers contre l’IA voleuse
             </button>
           </div>
 
@@ -157,8 +166,21 @@
           <button class="button button-quiet" id="leaveRoom" type="button">
             Quitter la salle
           </button>
+
+          <p class="help">
+            Objectif : le voleur vert gagne dès qu'il atteint le sommet central,
+            marqué en doré. Les policiers bleus gagnent s'ils bloquent tous ses
+            déplacements. Les quatre pions sont placés aléatoirement au début de
+            chaque partie. Sélectionne ton pion, puis une intersection voisine
+            mise en évidence. Les pions ne peuvent ni sauter ni partager une
+            intersection.
+          </p>
         </aside>
       </section>
+
+      <footer class="page-footer">
+        Multijoueur LAN · IA Minimax + Alpha-Bêta · Node.js + Socket.IO
+      </footer>
     </main>
 
     <script src="/socket.io/socket.io.js"></script>

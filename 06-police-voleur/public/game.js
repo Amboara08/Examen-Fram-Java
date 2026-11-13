@@ -178,6 +178,7 @@ const elements = {
   lobbyFeedback: document.getElementById("lobbyFeedback"),
   createRoom: document.getElementById("createRoom"),
   createAiRoom: document.getElementById("createAiRoom"),
+  createAiThiefRoom: document.getElementById("createAiThiefRoom"),
   joinRoom: document.getElementById("joinRoom"),
   roomCodeInput: document.getElementById("roomCodeInput"),
   roomCodeDisplay: document.getElementById("roomCodeDisplay"),
@@ -268,11 +269,12 @@ function render() {
 
   elements.roomCodeDisplay.textContent = roomCode;
   elements.myRole.textContent = roleName;
-  elements.myRoleDescription.textContent =
-    myRole === "thief"
-      ? gameState.playersOnline?.police && !gameState.playersOnline?.thief
-        ? "Tu contrôles le pion vert."
-        : "Tu contrôles le pion vert."
+  elements.myRoleDescription.textContent = gameState.aiMode
+    ? myRole === "thief"
+      ? "Tu contrôles le voleur contre une IA qui coordonne les trois policiers."
+      : "Tu contrôles les trois policiers contre une IA qui cherche le centre."
+    : myRole === "thief"
+      ? "Tu contrôles le pion vert."
       : "Tu contrôles les trois pions bleus.";
 
   if (gameState.gameOver) {
@@ -294,7 +296,9 @@ function render() {
     elements.turnTitle.textContent = `Tour des ${turnName}`;
     elements.statusText.textContent = isMyTurn
       ? "C’est à toi de jouer. Sélectionne un de tes pions."
-      : `Attends le déplacement de ton adversaire (${opponentName.toLowerCase()}).`;
+      : gameState.aiMode
+        ? "L’IA Minimax calcule son meilleur déplacement…"
+        : `Attends le déplacement de ton adversaire (${opponentName.toLowerCase()}).`;
     elements.turnLabel.textContent = isMyTurn
       ? "À toi de jouer"
       : `Adversaire : ${turnName}`;
@@ -304,8 +308,18 @@ function render() {
 
   elements.thiefPresence.classList.toggle("online", Boolean(players.thief));
   elements.policePresence.classList.toggle("online", Boolean(players.police));
-  elements.thiefOnline.textContent = players.thief ? "Connecté" : "Absent";
-  elements.policeOnline.textContent = players.police ? "Connecté" : "Absent";
+  elements.thiefOnline.textContent =
+    gameState.aiMode && gameState.aiRole === "thief"
+      ? "IA Minimax"
+      : players.thief
+        ? "Connecté"
+        : "Absent";
+  elements.policeOnline.textContent =
+    gameState.aiMode && gameState.aiRole === "police"
+      ? "IA Minimax"
+      : players.police
+        ? "Connecté"
+        : "Absent";
   elements.turnCount.textContent = gameState.turns;
   elements.thiefCount.textContent = gameState.thiefMoves;
   elements.message.textContent = localNotice || gameState.message;
@@ -325,7 +339,9 @@ function handleBoardClick(event) {
   if (!gameState || !myRole || gameState.gameOver || movePending) return;
   const players = gameState.playersOnline || {};
   if (!players.thief || !players.police) {
-    localNotice = "La partie attend la connexion des deux joueurs.";
+    localNotice = gameState.aiMode
+      ? "Préparation de la partie contre l’IA…"
+      : "La partie attend la connexion des deux joueurs.";
     render();
     return;
   }
@@ -390,11 +406,13 @@ function requestRoom(action, payload = {}) {
   }
   elements.createRoom.disabled = true;
   elements.createAiRoom.disabled = true;
+  if (elements.createAiThiefRoom) elements.createAiThiefRoom.disabled = true;
   elements.joinRoom.disabled = true;
   elements.lobbyFeedback.textContent = "Connexion à la salle…";
   socket.emit(action, payload, (response) => {
     elements.createRoom.disabled = false;
     elements.createAiRoom.disabled = false;
+    if (elements.createAiThiefRoom) elements.createAiThiefRoom.disabled = false;
     elements.joinRoom.disabled = false;
     enterRoom(response);
   });
@@ -402,8 +420,13 @@ function requestRoom(action, payload = {}) {
 
 elements.createRoom.addEventListener("click", () => requestRoom("createRoom"));
 elements.createAiRoom.addEventListener("click", () =>
-  requestRoom("createAiRoom"),
+  requestRoom("createAiRoom", { role: "thief" }),
 );
+if (elements.createAiThiefRoom) {
+  elements.createAiThiefRoom.addEventListener("click", () =>
+    requestRoom("createAiRoom", { role: "police" }),
+  );
+}
 elements.joinRoom.addEventListener("click", () => {
   const code = elements.roomCodeInput.value.trim().toUpperCase();
   if (!code) {
